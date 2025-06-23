@@ -55,7 +55,7 @@
       </div>
 
       <div class="col-md-6 col-lg-3">
-        <div class="card text-dark bg-light shadow-sm h-100">
+        <div class="card text-white bg-info shadow-sm h-100">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
               <div>
@@ -65,7 +65,7 @@
               <i class="bi bi-journal-check fs-1 opacity-50"></i>
             </div>
           </div>
-          <RouterLink to="/historico" class="card-footer-link-dark">
+          <RouterLink to="/historico" class="card-footer-link">
             Ver histórico <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>
@@ -85,27 +85,16 @@ const loanStore = useLoanStore();
 </script>
 
 <style scoped>
-.card-footer-link, .card-footer-link-dark {
+.card-footer-link {
   display: block;
   padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   background-color: rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s;
 }
-
-.card-footer-link {
-  color: rgba(255, 255, 255, 0.8);
-}
 .card-footer-link:hover {
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
-}
-
-.card-footer-link-dark {
-  color: rgba(0, 0, 0, 0.7);
-}
-.card-footer-link-dark:hover {
-  background-color: rgba(0, 0, 0, 0.15);
-  color: #000;
 }
 </style>
