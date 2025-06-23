@@ -26,10 +26,23 @@ export const useBookStore = defineStore('books', {
       };
       this.books.push(newBook);
     },
+
     deleteBook(bookId) {
+      const loanStore = useLoanStore(); // Inicializa o store de histórico
       const bookIndex = this.books.findIndex(book => book.id === bookId);
-      if (bookIndex !== -1) this.books.splice(bookIndex, 1);
+      
+      if (bookIndex !== -1) {
+        // Pega uma referência do objeto do livro antes de removê-lo.
+        const bookToDelete = this.books[bookIndex]; 
+        
+        // Pede ao loanStore para registrar o evento de exclusão.
+        loanStore.logBookDeletion(bookToDelete); 
+        
+        // Finalmente, remove o livro do acervo.
+        this.books.splice(bookIndex, 1);
+      }
     },
+    
     // Ação central para mudar o status de um livro
     updateBookStatus(bookId, actionType) {
       const book = this.getBookById(bookId);

@@ -22,7 +22,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="filteredBooks.length === 0">
+            <tr v-if="!filteredBooks.length">
               <td colspan="6" class="text-center text-muted py-4">Nenhum livro encontrado.</td>
             </tr>
             <tr v-for="book in filteredBooks" :key="book.id">
@@ -32,19 +32,11 @@
               <td>{{ book.genre }}</td>
               <td>{{ book.available }} / {{ book.quantity }}</td>
               <td class="text-center">
-                <button 
-                  @click="goToLoanPage(book.id)" 
-                  class="btn btn-sm btn-primary me-2" 
-                  :disabled="book.available === 0" 
-                  title="Emprestar Livro">
+                <button @click="goToLoanPage(book.id)" class="btn btn-sm btn-primary me-2" :disabled="book.available === 0" title="Emprestar Livro">
                   <i class="bi bi-box-arrow-up-right"></i> Emprestar
                 </button>
                 
-                <button 
-                  v-if="book.loanedOut > 0" 
-                  @click="goToReturnPage(book.id)" 
-                  class="btn btn-sm btn-success me-2" 
-                  title="Devolver Livro">
+                <button v-if="book.loanedOut > 0" @click="goToReturnPage(book.id)" class="btn btn-sm btn-success me-2" title="Devolver Livro">
                   <i class="bi bi-box-arrow-down-left"></i> Devolver
                 </button>
 
@@ -71,7 +63,7 @@ import { ref, computed } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
 import { useLoanStore } from '@/store/loanStore';
-import PasswordModal from '@/components/PasswordModal.vue';
+import PasswordModal from '@/components/PasswordModal.vue'; // Importa o componente do modal
 
 const bookStore = useBookStore();
 const loanStore = useLoanStore();
@@ -106,26 +98,23 @@ const goToReturnPage = (bookId) => {
   }
 };
 
-// FUNÇÃO DE EXCLUSÃO MODIFICADA
 const promptForDelete = (bookId) => {
-  // Busca o livro no nosso "banco de dados"
   const book = bookStore.getBookById(bookId);
 
-  // Verificação de segurança: se o livro tiver cópias emprestadas, exibe um alerta e para a execução.
   if (book && book.loanedOut > 0) {
     alert('Ação não permitida: Este livro possui cópias emprestadas e não pode ser excluído.');
     return; 
   }
 
-  // Se a verificação passar, continua o fluxo normal para abrir o modal de senha.
   bookToDeleteId.value = bookId;
   showPasswordModal.value = true;
 };
 
+// Esta função é chamada pelo evento 'success' do modal
 const handleActualDeletion = () => {
   if (bookToDeleteId.value) {
     bookStore.deleteBook(bookToDeleteId.value);
-    bookToDeleteId.value = null;
+    bookToDeleteId.value = null; // Limpa o ID para a próxima exclusão
   }
 };
 </script>

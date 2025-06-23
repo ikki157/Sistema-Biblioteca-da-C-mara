@@ -83,5 +83,17 @@ export const useLoanStore = defineStore('loans', {
       }
       return false;
     },
+
+    logBookDeletion(book) {
+      const deletionEvent = {
+        id: this.nextHistoryId++,
+        loanId: `delete-${book.id}-${new Date().getTime()}`, // ID único para o evento
+        type: 'Exclusão',
+        book: { ...book }, // Salva uma cópia dos dados do livro que foi excluído
+        readerName: 'N/A', // Não se aplica a uma exclusão
+        date: new Date(),
+      };
+      this.history.unshift(deletionEvent);
+    },
   },
 });

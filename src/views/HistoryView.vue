@@ -22,12 +22,12 @@
             <tr v-for="event in loanStore.history" :key="event.id">
               <td>{{ formatDateTime(event.date) }}</td>
               <td>
-                <span class="badge" :class="event.type === 'Empréstimo' ? 'bg-warning text-dark' : 'bg-success'">
+                <span class="badge" :class="getBadgeClass(event.type)">
                   {{ event.type }}
                 </span>
               </td>
               <td>{{ event.book.title }} (Cód: {{ event.book.code }})</td>
-              <td>{{ event.readerName }}</td>
+              <td>{{ event.readerName !== 'N/A' ? event.readerName : '—' }}</td>
             </tr>
           </tbody>
         </table>
@@ -42,13 +42,26 @@ import { useLoanStore } from '@/store/loanStore';
 
 const loanStore = useLoanStore();
 
-// Função para formatar a data para o padrão brasileiro
 const formatDateTime = (date) => {
   if (!date) return '';
   return new Date(date).toLocaleString('pt-BR', {
     dateStyle: 'short',
     timeStyle: 'short',
   });
+};
+
+// NOVA FUNÇÃO: Retorna a classe CSS correta para cada tipo de evento.
+const getBadgeClass = (eventType) => {
+  switch (eventType) {
+    case 'Empréstimo':
+      return 'bg-warning text-dark';
+    case 'Devolução':
+      return 'bg-success';
+    case 'Exclusão':
+      return 'bg-danger';
+    default:
+      return 'bg-secondary';
+  }
 };
 </script>
 
