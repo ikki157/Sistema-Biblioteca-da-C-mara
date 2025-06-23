@@ -9,34 +9,45 @@
         <input type="text" v-model="searchQuery" class="form-control" placeholder="Pesquisar por título, autor, gênero ou código...">
       </div>
 
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Gênero</th>
-            <th>Disponíveis</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="filteredBooks.length === 0">
-            <td colspan="6" class="text-center text-muted">Nenhum livro encontrado.</td>
-          </tr>
-          <tr v-for="book in filteredBooks" :key="book.id">
-            <td>{{ book.code }}</td>
-            <td>{{ book.title }}</td>
-            <td>{{ book.author }}</td>
-            <td>{{ book.genre }}</td>
-            <td>{{ book.available }} / {{ book.quantity }}</td>
-            <td>
-              <button @click="goToLoanPage(book.id)" class="btn btn-sm btn-primary me-2" :disabled="book.available === 0">Emprestar</button>
-              <button @click="promptForDelete(book.id)" class="btn btn-sm btn-outline-danger">Excluir</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Gênero</th>
+              <th>Disponíveis</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredBooks.length === 0">
+              <td colspan="6" class="text-center text-muted py-4">Nenhum livro encontrado.</td>
+            </tr>
+            <tr v-for="book in filteredBooks" :key="book.id">
+              <td>{{ book.code }}</td>
+              <td>{{ book.title }}</td>
+              <td>{{ book.author }}</td>
+              <td>{{ book.genre }}</td>
+              <td>{{ book.available }} / {{ book.quantity }}</td>
+              <td class="text-center">
+                <button @click="goToLoanPage(book.id)" class="btn btn-sm btn-primary me-2" :disabled="book.available === 0" title="Emprestar Livro">
+                  <i class="bi bi-box-arrow-up-right"></i> Emprestar
+                </button>
+                
+                <button v-if="book.loanedOut > 0" @click="goToReturnPage(book.id)" class="btn btn-sm btn-success me-2" title="Devolver Livro">
+                  <i class="bi bi-box-arrow-down-left"></i> Devolver
+                </button>
+
+                <button @click="promptForDelete(book.id)" class="btn btn-sm btn-outline-danger" title="Excluir Livro">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -45,17 +56,19 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
+import { useLoanStore } from '@/store/loanStore';
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const bookStore = useBookStore();
+const loanStore = useLoanStore();
 const router = useRouter();
+
 const searchQuery = ref('');
 const showPasswordModal = ref(false);
 const bookToDeleteId = ref(null);
 
-// BUSCA CORRIGIDA: Agora inclui o gênero.
 const filteredBooks = computed(() => {
   if (!searchQuery.value) return bookStore.books;
   
@@ -68,12 +81,19 @@ const filteredBooks = computed(() => {
   );
 });
 
-// FUNÇÃO DO BOTÃO "EMPRESTAR"
 const goToLoanPage = (bookId) => {
   router.push(`/registrar-emprestimo/${bookId}`);
 };
 
-// FUNÇÕES DO BOTÃO "EXCLUIR"
+const goToReturnPage = (bookId) => {
+  const activeLoan = loanStore.history.find(e => e.book.id === bookId && !loanStore.history.some(r => r.loanId === e.loanId && r.type === 'Devolução'));
+  if (activeLoan) {
+    router.push(`/registrar-devolucao/${activeLoan.loanId}`);
+  } else {
+    alert('Não foi encontrado um empréstimo ativo para este livro.');
+  }
+};
+
 const promptForDelete = (bookId) => {
   bookToDeleteId.value = bookId;
   showPasswordModal.value = true;
@@ -86,3 +106,9 @@ const handleActualDeletion = () => {
   }
 };
 </script>
+
+<style scoped>
+  .table {
+    vertical-align: middle;
+  }
+</style>

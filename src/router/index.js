@@ -21,7 +21,7 @@ const router = createRouter({
     // Adicione as rotas para as novas views
     { path: '/pesquisar-livro', name: 'search-book', component: SearchBookView, meta: { requiresAuth: true } },
     { path: '/registrar-emprestimo/:id', name: 'register-loan', component: () => import('../views/RegisterLoanView.vue'), meta: { requiresAuth: true } },
-    { path: '/registrar-devolucao', name: 'register-return', component: RegisterReturnView, meta: { requiresAuth: true } },
+    { path: '/registrar-devolucao/:loanId', name: 'register-return', component: () => import('../views/RegisterReturnView.vue'), meta: { requiresAuth: true } },
     { path: '/historico', name: 'history', component: HistoryView, meta: { requiresAuth: true } }
   ]
 })

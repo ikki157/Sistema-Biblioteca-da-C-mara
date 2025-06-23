@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="h2">Dashboard</h1>
-    </div>
-
+    <h1 class="h2 mb-4">Dashboard</h1>
     <div class="row g-4">
       
       <div class="col-md-6 col-lg-3">
@@ -14,11 +11,11 @@
                 <h5 class="card-title">Total de Cópias</h5>
                 <p class="card-text fs-2 fw-bold">{{ bookStore.totalBookCopies }}</p>
               </div>
-              <i class="bi bi-book-half fs-1 opacity-50"></i>
+              <i class="bi bi-collection fs-1 opacity-50"></i>
             </div>
           </div>
-          <RouterLink to="/pesquisar-livro" class="card-footer text-white text-decoration-none">
-            Ver detalhes <i class="bi bi-arrow-right-circle"></i>
+          <RouterLink to="/pesquisar-livro" class="card-footer-link">
+            Ver acervo <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>
       </div>
@@ -28,13 +25,13 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <h5 class="card-title">Livros Emprestados</h5>
-                <p class="card-text fs-2 fw-bold">{{ bookStore.loanedBooksCount }}</p>
+                <h5 class="card-title">Emprestados Agora</h5>
+                <p class="card-text fs-2 fw-bold">{{ loanStore.currentlyLoanedCount }}</p>
               </div>
-              <i class="bi bi-arrow-up-right-square fs-1 opacity-50"></i>
+              <i class="bi bi-box-arrow-up-right fs-1 opacity-50"></i>
             </div>
           </div>
-          <RouterLink to="/historico?status=emprestado" class="card-footer text-white text-decoration-none">
+          <RouterLink to="/historico" class="card-footer-link">
             Ver detalhes <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>
@@ -43,27 +40,16 @@
       <div class="col-md-6 col-lg-3">
         <div class="card text-white bg-success shadow-sm h-100">
           <div class="card-body">
-            <div>
-              <h5 class="card-title">Total de Empréstimos</h5>
-              <p class="card-text fs-2 fw-bold">0</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title">Total de Empréstimos</h5>
+                <p class="card-text fs-2 fw-bold">{{ loanStore.totalLoans }}</p>
+              </div>
+              <i class="bi bi-graph-up-arrow fs-1 opacity-50"></i>
             </div>
           </div>
-          <RouterLink to="/historico" class="card-footer text-white text-decoration-none">
+          <RouterLink to="/historico" class="card-footer-link">
             Ver relatórios <i class="bi bi-arrow-right-circle"></i>
-          </RouterLink>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="card text-white bg-info shadow-sm h-100">
-          <div class="card-body">
-            <div>
-              <h5 class="card-title">Devoluções Hoje</h5>
-              <p class="card-text fs-2 fw-bold">0</p>
-            </div>
-          </div>
-           <RouterLink to="/historico?filtro=hoje" class="card-footer text-white text-decoration-none">
-            Ver detalhes <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>
       </div>
@@ -74,17 +60,24 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { useBookStore } from '@/store/bookStore'; // Importa o nosso novo store
+import { useBookStore } from '@/store/bookStore';
+import { useLoanStore } from '@/store/loanStore';
 
-// Inicializa o store para que possamos usá-lo no template
 const bookStore = useBookStore();
+const loanStore = useLoanStore();
 </script>
 
 <style scoped>
-.card-footer {
+.card-footer-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s;
 }
-.card-footer:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+.card-footer-link:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
 }
 </style>

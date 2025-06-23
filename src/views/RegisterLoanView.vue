@@ -4,7 +4,7 @@
       <h2 class="h4 mb-0">Registrar Empréstimo</h2>
       <RouterLink to="/pesquisar-livro" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Voltar</RouterLink>
     </div>
-    <div class="card-body">
+    <div class="card-body p-4">
       <div v-if="book">
         <div class="alert alert-info">
           <h5 class="alert-heading">{{ book.title }}</h5>
@@ -15,7 +15,7 @@
 
         <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-        <form @submit.prevent="promptForPasswordConfirmation">
+        <form @submit.prevent="promptForPasswordConfirmation" v-if="!successMessage">
           <div class="mb-3">
             <label for="userName" class="form-label">Nome do Leitor</label>
             <input type="text" v-model="readerName" class="form-control" id="userName" required>
@@ -24,7 +24,7 @@
         </form>
       </div>
       <div v-else class="alert alert-danger">
-        Livro não encontrado ou indisponível.
+        Livro não encontrado ou indisponível para empréstimo.
       </div>
     </div>
   </div>
@@ -34,37 +34,41 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
+import { useLoanStore } from '@/store/loanStore';
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const route = useRoute();
 const bookStore = useBookStore();
+const loanStore = useLoanStore();
 
 const book = ref(null);
 const readerName = ref('');
 const showPasswordModal = ref(false);
 const successMessage = ref('');
 
-// Ao carregar o componente, busca o livro pelo ID da URL
 onMounted(() => {
   const bookId = parseInt(route.params.id);
   book.value = bookStore.getBookById(bookId);
 });
 
 const promptForPasswordConfirmation = () => {
+  if (readerName.value.trim() === '') {
+    alert('Por favor, insira o nome do leitor.');
+    return;
+  }
   showPasswordModal.value = true;
 };
 
 const handleActualLoan = () => {
   if (book.value) {
-    // Chama a ação no store para registrar o empréstimo
-    const success = bookStore.registerLoan(book.value.id);
+    const success = loanStore.registerLoan(book.value.id, readerName.value);
     if (success) {
       successMessage.value = `Empréstimo do livro "${book.value.title}" para ${readerName.value} registrado com sucesso!`;
-      readerName.value = ''; // Limpa o campo
+      // O formulário é ocultado pela diretiva v-if no template
     } else {
-      successMessage.value = 'Erro: Não há cópias disponíveis deste livro.';
+      alert('Erro: Não há cópias disponíveis deste livro.');
     }
   }
 };
