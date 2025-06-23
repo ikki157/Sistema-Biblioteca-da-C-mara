@@ -9,7 +9,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h5 class="card-title">Total de Cópias</h5>
-                <p class="card-text fs-2 fw-bold">{{ bookStore.totalBookCopies }}</p>
+                <p class="card-text fs-2 fw-bold">{{ bookStore.totalBookCopies || 0 }}</p>
               </div>
               <i class="bi bi-collection fs-1 opacity-50"></i>
             </div>
@@ -26,7 +26,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h5 class="card-title">Emprestados Agora</h5>
-                <p class="card-text fs-2 fw-bold">{{ loanStore.currentlyLoanedCount }}</p>
+                <p class="card-text fs-2 fw-bold">{{ loanStore.currentlyLoanedCount || 0 }}</p>
               </div>
               <i class="bi bi-box-arrow-up-right fs-1 opacity-50"></i>
             </div>
@@ -43,7 +43,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h5 class="card-title">Total de Empréstimos</h5>
-                <p class="card-text fs-2 fw-bold">{{ loanStore.totalLoans }}</p>
+                <p class="card-text fs-2 fw-bold">{{ loanStore.totalLoans || 0 }}</p>
               </div>
               <i class="bi bi-graph-up-arrow fs-1 opacity-50"></i>
             </div>
@@ -60,7 +60,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h5 class="card-title">Devoluções Totais</h5>
-                <p class="card-text fs-2 fw-bold">{{ loanStore.totalReturns }}</p>
+                <p class="card-text fs-2 fw-bold">{{ loanStore.totalReturns || 0 }}</p>
               </div>
               <i class="bi bi-journal-check fs-1 opacity-50"></i>
             </div>
