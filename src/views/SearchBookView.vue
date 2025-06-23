@@ -32,15 +32,27 @@
               <td>{{ book.genre }}</td>
               <td>{{ book.available }} / {{ book.quantity }}</td>
               <td class="text-center">
-                <button @click="goToLoanPage(book.id)" class="btn btn-sm btn-primary me-2" :disabled="book.available === 0" title="Emprestar Livro">
+                <button 
+                  @click="goToLoanPage(book.id)" 
+                  class="btn btn-sm btn-primary me-2" 
+                  :disabled="book.available === 0" 
+                  title="Emprestar Livro">
                   <i class="bi bi-box-arrow-up-right"></i> Emprestar
                 </button>
                 
-                <button v-if="book.loanedOut > 0" @click="goToReturnPage(book.id)" class="btn btn-sm btn-success me-2" title="Devolver Livro">
+                <button 
+                  v-if="book.loanedOut > 0" 
+                  @click="goToReturnPage(book.id)" 
+                  class="btn btn-sm btn-success me-2" 
+                  title="Devolver Livro">
                   <i class="bi bi-box-arrow-down-left"></i> Devolver
                 </button>
 
-                <button @click="promptForDelete(book.id)" class="btn btn-sm btn-outline-danger" title="Excluir Livro">
+                <button 
+                  @click="promptForDelete(book.id)" 
+                  class="btn btn-sm btn-outline-danger" 
+                  :disabled="book.loanedOut > 0"
+                  :title="book.loanedOut > 0 ? 'Livro com cópias emprestadas não pode ser excluído' : 'Excluir Livro'">
                   <i class="bi bi-trash"></i>
                 </button>
               </td>
@@ -94,7 +106,18 @@ const goToReturnPage = (bookId) => {
   }
 };
 
+// FUNÇÃO DE EXCLUSÃO MODIFICADA
 const promptForDelete = (bookId) => {
+  // Busca o livro no nosso "banco de dados"
+  const book = bookStore.getBookById(bookId);
+
+  // Verificação de segurança: se o livro tiver cópias emprestadas, exibe um alerta e para a execução.
+  if (book && book.loanedOut > 0) {
+    alert('Ação não permitida: Este livro possui cópias emprestadas e não pode ser excluído.');
+    return; 
+  }
+
+  // Se a verificação passar, continua o fluxo normal para abrir o modal de senha.
   bookToDeleteId.value = bookId;
   showPasswordModal.value = true;
 };
