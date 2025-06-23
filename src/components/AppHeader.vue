@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container-fluid">
         <RouterLink to="/" class="navbar-brand d-flex align-items-center">
-          <img src="@/assets/logo-camara.svg" alt="Logo Câmara" width="30" height="24" class="d-inline-block align-text-top me-2">
+          <img src="@/assets/logo-camara.png" alt="Logo Câmara" width="30" height="24" class="d-inline-block align-text-top me-2">
           Sistema da Biblioteca
         </RouterLink>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
