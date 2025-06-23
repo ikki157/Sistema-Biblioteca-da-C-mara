@@ -1,12 +1,15 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/store/auth' // Importe o store
+import { useAuthStore } from '@/store/auth'
 
-// Importe suas views
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import RegisterBookView from '../views/RegisterBookView.vue'
-// ... importe outras views conforme as cria
+
+// Importe as novas views
+import SearchBookView from '../views/SearchBookView.vue'
+import RegisterLoanView from '../views/RegisterLoanView.vue'
+import RegisterReturnView from '../views/RegisterReturnView.vue'
+import HistoryView from '../views/HistoryView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,19 +17,21 @@ const router = createRouter({
     { path: '/login', name: 'login', component: LoginView },
     { path: '/', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
     { path: '/registrar-livro', name: 'register-book', component: RegisterBookView, meta: { requiresAuth: true } },
-    // ... defina outras rotas aqui, sempre com 'meta: { requiresAuth: true }'
+    
+    // Adicione as rotas para as novas views
+    { path: '/pesquisar-livro', name: 'search-book', component: SearchBookView, meta: { requiresAuth: true } },
+    { path: '/registrar-emprestimo', name: 'register-loan', component: RegisterLoanView, meta: { requiresAuth: true } },
+    { path: '/registrar-devolucao', name: 'register-return', component: RegisterReturnView, meta: { requiresAuth: true } },
+    { path: '/historico', name: 'history', component: HistoryView, meta: { requiresAuth: true } }
   ]
 })
 
-// "Guarda de Navegação": Roda antes de cada mudança de rota
 router.beforeEach((to, from, next) => {
-  const auth = useAuthStore()
-
-  // Se a rota exige autenticação e o usuário NÃO está logado
+  const auth = useAuthStore();
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    next({ name: 'login' }) // Redireciona para a página de login
+    next({ name: 'login' });
   } else {
-    next() // Permite a navegação
+    next();
   }
 })
 

@@ -1,31 +1,34 @@
 // src/store/auth.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+// REMOVEMOS o import do useRouter daqui.
 
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter()
-  const user = ref(null)
-  const isAuthenticated = computed(() => !!user.value)
+  // REMOVEMOS a chamada const router = useRouter() daqui.
+  
+  const user = ref(null);
+  const isAuthenticated = computed(() => !!user.value);
 
+  // Ação de Login (Modificada)
   function login(username, password) {
-    // Lógica de login simulada. Em um projeto real, faria uma chamada de API.
     if (username === 'bibliotecario' && password === 'senha123') {
-      user.value = { name: 'Bibliotecário Autenticado' }
-      router.push('/') // Redireciona para o Dashboard após o login
-      return true
+      user.value = { name: 'Bibliotecário Autenticado' };
+      // Apenas retorna true. A responsabilidade de redirecionar saiu daqui.
+      return true;
     }
-    return false
+    // Se o login falhar, retorna false.
+    return false;
   }
 
+  // Ação de Logout (Modificada)
   function logout() {
-    user.value = null
-    router.push('/login') // Redireciona para a página de login
+    user.value = null;
+    // O redirecionamento aqui no logout pode ser feito no componente que chama a ação,
+    // como o AppHeader.vue, para manter o padrão.
   }
-
+  
   function verifyPassword(password) {
-    // Lógica simulada para confirmar a senha em ações críticas
-    return password === 'senha123'
+    return password === 'senha123';
   }
 
   return { user, isAuthenticated, login, logout, verifyPassword }
