@@ -112,9 +112,11 @@ const promptForDelete = (bookId) => {
 
 // Esta função é chamada pelo evento 'success' do modal
 const handleActualDeletion = () => {
+  console.log('3. Sinal "success" recebido! A página vai executar a exclusão.');
+  
   if (bookToDeleteId.value) {
     bookStore.deleteBook(bookToDeleteId.value);
-    bookToDeleteId.value = null; // Limpa o ID para a próxima exclusão
+    bookToDeleteId.value = null;
   }
 };
 </script>

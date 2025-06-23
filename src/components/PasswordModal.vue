@@ -21,6 +21,7 @@
             <div class="mb-3">
               <label for="password-confirm" class="form-label">Senha</label>
               <input 
+                ref="passwordInput"
                 v-model="password"
                 type="password" 
                 id="password-confirm"
@@ -44,46 +45,46 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { useAuthStore } from '@/store/auth';
 
-// Define as propriedades e os eventos que o componente pode receber e emitir
 const props = defineProps({
-  modelValue: Boolean, // Controla se o modal está visível (usado com v-model)
+  modelValue: Boolean,
 });
 const emit = defineEmits(['update:modelValue', 'success']);
 
 const auth = useAuthStore();
 const password = ref('');
 const error = ref('');
+const passwordInput = ref(null); // Referência para o campo de input
 
-// Função chamada pelo botão "Confirmar"
 function confirmAction() {
-  // Verifica a senha usando o authStore
+  console.log('1. Botão "Confirmar" do modal foi clicado.');
+
   if (auth.verifyPassword(password.value)) {
-    // Se a senha estiver correta:
-    // 1. Emite o evento 'success', que a página SearchBookView está ouvindo.
+    console.log('2. Senha correta! O modal vai emitir o sinal de "success".');
     emit('success');
-    // 2. Fecha o modal.
     closeModal();
   } else {
-    // Se a senha estiver incorreta, mostra uma mensagem de erro.
+    console.log('ERRO: A senha digitada está incorreta.');
     error.value = 'Senha incorreta. Tente novamente.';
   }
 }
 
 function closeModal() {
-  // Reseta os campos ao fechar
-  password.value = '';
-  error.value = '';
-  // Emite o evento para fechar o modal (atualiza o v-model na página pai)
   emit('update:modelValue', false);
 }
 
-// Observa a propriedade 'modelValue'. Se ela mudar para 'false' (ou seja, o modal for fechado),
-// reseta os campos de erro e senha.
+// Observa a visibilidade do modal
 watch(() => props.modelValue, (newValue) => {
-  if (!newValue) {
+  // Se o modal se tornou visível
+  if (newValue) {
+    // nextTick garante que o DOM foi atualizado ANTES de tentarmos focar no input
+    nextTick(() => {
+      passwordInput.value?.focus();
+    });
+  } else {
+    // Se o modal foi fechado, limpa os campos
     password.value = '';
     error.value = '';
   }
