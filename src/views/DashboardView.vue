@@ -60,7 +60,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h5 class="card-title">Devoluções Totais</h5>
-                <p class="card-text fs-2 fw-bold">{{ loanStore.totalReturns || 0 }}</p>
+                <p class="card-text fs-2 fw-bold">{{ loanStore.totalReturns || 0 }}</p> <!-- O "|| 0" resolve o problema de undefined -->
               </div>
               <i class="bi bi-journal-check fs-1 opacity-50"></i>
             </div>
