@@ -12,19 +12,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <RouterLink to="/registrar-livro" class="nav-link">Registrar Livro</RouterLink>
+              <RouterLink to="/pesquisar-livro" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-search"></i>Pesquisar</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink to="/pesquisar-livro" class="nav-link">Pesquisar/Excluir</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink to="/registrar-emprestimo" class="nav-link">Empréstimo</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink to="/registrar-devolucao" class="nav-link">Devolução</RouterLink>
+              <RouterLink to="/registrar-livro" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-plus-circle"></i>Registrar Livro</RouterLink>
             </li>
              <li class="nav-item">
-              <RouterLink to="/historico" class="nav-link">Histórico</RouterLink>
+              <RouterLink to="/historico" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-clock-history"></i>Histórico</RouterLink>
             </li>
           </ul>
           <button @click="auth.logout()" class="btn btn-outline-danger">
