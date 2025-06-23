@@ -1,26 +1,24 @@
 import { defineStore } from 'pinia';
 
 export const useBookStore = defineStore('books', {
-  // STATE: Onde os dados do nosso "banco de dados" de livros ficam guardados.
   state: () => ({
-    books: [], // Começa como um array vazio.
-    nextBookId: 1, // Um contador para gerar IDs únicos.
+    books: [],
+    nextBookId: 1,
   }),
 
-  // GETTERS: Para calcular dados derivados do state.
   getters: {
-    // Calcula o número total de cópias, somando as quantidades.
     totalBookCopies: (state) => {
       return state.books.reduce((total, book) => total + book.quantity, 0);
     },
-    // Calcula quantos livros estão emprestados (lógica a ser implementada).
     loanedBooksCount: (state) => {
-      // Simples por enquanto, vamos melhorar isso depois.
       return state.books.filter(book => book.status === 'emprestado').length;
+    },
+    // Novo getter para encontrar um livro pelo ID
+    getBookById: (state) => {
+      return (bookId) => state.books.find(book => book.id === bookId);
     }
   },
 
-  // ACTIONS: Funções para modificar o state. São nossas "transações" com o banco de dados.
   actions: {
     registerBook(bookData) {
       const newBook = {
@@ -30,10 +28,27 @@ export const useBookStore = defineStore('books', {
         author: bookData.author,
         genre: bookData.genre,
         quantity: bookData.quantity,
-        available: bookData.quantity, // Cópias disponíveis começam igual à quantidade total.
+        available: bookData.quantity,
         status: 'disponível'
       };
       this.books.push(newBook);
+    },
+    // NOVA AÇÃO: Excluir um livro
+    deleteBook(bookId) {
+      const bookIndex = this.books.findIndex(book => book.id === bookId);
+      if (bookIndex !== -1) {
+        this.books.splice(bookIndex, 1);
+      }
+    },
+    // NOVA AÇÃO: Registrar um empréstimo (atualiza a disponibilidade)
+    registerLoan(bookId) {
+      const book = this.getBookById(bookId);
+      if (book && book.available > 0) {
+        book.available--;
+        // Futuramente, podemos mudar o status se available for 0
+        return true; // Sucesso
+      }
+      return false; // Falha (livro não encontrado ou indisponível)
     },
   },
 });

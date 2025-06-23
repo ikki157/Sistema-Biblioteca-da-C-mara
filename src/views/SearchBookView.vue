@@ -2,13 +2,11 @@
   <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
       <h2 class="h4 mb-0">Pesquisar Acervo</h2>
-      <RouterLink to="/" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Voltar ao Home
-      </RouterLink>
+      <RouterLink to="/" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Voltar</RouterLink>
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <input type="text" v-model="searchQuery" class="form-control" placeholder="Digite para pesquisar por título, autor ou código...">
+        <input type="text" v-model="searchQuery" class="form-control" placeholder="Pesquisar por título, autor, gênero ou código...">
       </div>
 
       <table class="table table-striped table-hover">
@@ -24,7 +22,7 @@
         </thead>
         <tbody>
           <tr v-if="filteredBooks.length === 0">
-            <td colspan="5" class="text-center text-muted">Nenhum livro encontrado.</td>
+            <td colspan="6" class="text-center text-muted">Nenhum livro encontrado.</td>
           </tr>
           <tr v-for="book in filteredBooks" :key="book.id">
             <td>{{ book.code }}</td>
@@ -33,29 +31,34 @@
             <td>{{ book.genre }}</td>
             <td>{{ book.available }} / {{ book.quantity }}</td>
             <td>
-              <button class="btn btn-sm btn-primary me-2">Emprestar</button>
-              <button class="btn btn-sm btn-outline-danger">Excluir</button>
+              <button @click="goToLoanPage(book.id)" class="btn btn-sm btn-primary me-2" :disabled="book.available === 0">Emprestar</button>
+              <button @click="promptForDelete(book.id)" class="btn btn-sm btn-outline-danger">Excluir</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <PasswordModal v-model="showPasswordModal" @success="handleActualDeletion" />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
+import PasswordModal from '@/components/PasswordModal.vue';
 
 const bookStore = useBookStore();
+const router = useRouter();
 const searchQuery = ref('');
+const showPasswordModal = ref(false);
+const bookToDeleteId = ref(null);
 
-// Computed property que filtra os livros em tempo real
+// BUSCA CORRIGIDA: Agora inclui o gênero.
 const filteredBooks = computed(() => {
-  if (!searchQuery.value) {
-    return bookStore.books;
-  }
+  if (!searchQuery.value) return bookStore.books;
+  
   const lowerCaseQuery = searchQuery.value.toLowerCase();
   return bookStore.books.filter(book => 
     book.title.toLowerCase().includes(lowerCaseQuery) ||
@@ -64,10 +67,22 @@ const filteredBooks = computed(() => {
     book.genre.toLowerCase().includes(lowerCaseQuery)
   );
 });
-</script>
 
-<style scoped>
-  .table {
-    vertical-align: middle;
+// FUNÇÃO DO BOTÃO "EMPRESTAR"
+const goToLoanPage = (bookId) => {
+  router.push(`/registrar-emprestimo/${bookId}`);
+};
+
+// FUNÇÕES DO BOTÃO "EXCLUIR"
+const promptForDelete = (bookId) => {
+  bookToDeleteId.value = bookId;
+  showPasswordModal.value = true;
+};
+
+const handleActualDeletion = () => {
+  if (bookToDeleteId.value) {
+    bookStore.deleteBook(bookToDeleteId.value);
+    bookToDeleteId.value = null;
   }
-</style>
+};
+</script>

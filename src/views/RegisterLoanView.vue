@@ -2,26 +2,70 @@
   <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
       <h2 class="h4 mb-0">Registrar Empréstimo</h2>
-      <RouterLink to="/" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Voltar ao Home
-      </RouterLink>
+      <RouterLink to="/pesquisar-livro" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Voltar</RouterLink>
     </div>
     <div class="card-body">
-      <form>
-        <div class="mb-3">
-          <label for="bookCode" class="form-label">Código do Livro</label>
-          <input type="text" class="form-control" id="bookCode" placeholder="Insira o código ou ISBN do livro">
+      <div v-if="book">
+        <div class="alert alert-info">
+          <h5 class="alert-heading">{{ book.title }}</h5>
+          <p><strong>Autor:</strong> {{ book.author }}</p>
+          <p><strong>Código:</strong> {{ book.code }}</p>
+          <p class="mb-0"><strong>Cópias disponíveis:</strong> {{ book.available }}</p>
         </div>
-        <div class="mb-3">
-          <label for="userName" class="form-label">Nome do Leitor</label>
-          <input type="text" class="form-control" id="userName" placeholder="Insira o nome de quem está pegando o livro">
-        </div>
-        <button type="submit" class="btn btn-primary">Confirmar Empréstimo</button>
-      </form>
+
+        <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+        <form @submit.prevent="promptForPasswordConfirmation">
+          <div class="mb-3">
+            <label for="userName" class="form-label">Nome do Leitor</label>
+            <input type="text" v-model="readerName" class="form-control" id="userName" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Confirmar Empréstimo</button>
+        </form>
+      </div>
+      <div v-else class="alert alert-danger">
+        Livro não encontrado ou indisponível.
+      </div>
     </div>
   </div>
+
+  <PasswordModal v-model="showPasswordModal" @success="handleActualLoan" />
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useBookStore } from '@/store/bookStore';
+import PasswordModal from '@/components/PasswordModal.vue';
+
+const route = useRoute();
+const bookStore = useBookStore();
+
+const book = ref(null);
+const readerName = ref('');
+const showPasswordModal = ref(false);
+const successMessage = ref('');
+
+// Ao carregar o componente, busca o livro pelo ID da URL
+onMounted(() => {
+  const bookId = parseInt(route.params.id);
+  book.value = bookStore.getBookById(bookId);
+});
+
+const promptForPasswordConfirmation = () => {
+  showPasswordModal.value = true;
+};
+
+const handleActualLoan = () => {
+  if (book.value) {
+    // Chama a ação no store para registrar o empréstimo
+    const success = bookStore.registerLoan(book.value.id);
+    if (success) {
+      successMessage.value = `Empréstimo do livro "${book.value.title}" para ${readerName.value} registrado com sucesso!`;
+      readerName.value = ''; // Limpa o campo
+    } else {
+      successMessage.value = 'Erro: Não há cópias disponíveis deste livro.';
+    }
+  }
+};
 </script>
