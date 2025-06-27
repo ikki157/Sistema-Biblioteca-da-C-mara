@@ -14,28 +14,28 @@
           <form @submit.prevent="promptForPasswordConfirmation">
             <div class="mb-3">
               <label for="bookTitle" class="form-label">Título do Livro</label>
-              <input type="text" v-model="book.title" class="form-control" id="bookTitle" required>
+              <input type="text" v-model="book.title" class="form-control" placeholder="Digite o título do livro" id="bookTitle" required>
             </div>
             
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="bookAuthor" class="form-label">Autor</label>
-                <input type="text" v-model="book.author" class="form-control" id="bookAuthor" required>
+                <input type="text" v-model="book.author" class="form-control" placeholder="Digite o autor do livro" id="bookAuthor" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="bookGenre" class="form-label">Gênero</label>
-                <input type="text" v-model="book.genre" class="form-control" id="bookGenre" required>
+                <input type="text" v-model="book.genre" class="form-control" placeholder="Digite o gênero do livro" id="bookGenre" required>
               </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="bookCode" class="form-label">Código / ISBN</label>
-                <input type="text" v-model="book.code" class="form-control" id="bookCode" required>
+                <input type="text" v-model="book.code" class="form-control" placeholder="Digite o código / ISBN" id="bookCode" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="bookQuantity" class="form-label">Quantidade</label>
-                <input type="number" v-model.number="book.quantity" class="form-control" id="bookQuantity" min="1" required>
+                <input type="number" v-model.number="book.quantity" class="form-control" placeholder="Digite a quantidade" id="bookQuantity" min="1" required>
               </div>
             </div>
 

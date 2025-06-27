@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-// A LINHA QUE FALTAVA ESTÁ AQUI:
 import { useLoanStore } from './loanStore'; 
 
 export const useBookStore = defineStore('books', {
@@ -29,14 +28,12 @@ export const useBookStore = defineStore('books', {
     },
 
     deleteBook(bookId) {
-      // Para usar o loanStore aqui dentro, primeiro precisamos inicializá-lo.
       const loanStore = useLoanStore(); 
       const bookIndex = this.books.findIndex(book => book.id === bookId);
       
       if (bookIndex !== -1) {
         const bookToDelete = this.books[bookIndex]; 
         
-        // Agora o loanStore é conhecido e podemos chamar a ação dele.
         loanStore.logBookDeletion(bookToDelete); 
         
         this.books.splice(bookIndex, 1);

@@ -5,11 +5,14 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import RegisterBookView from '../views/RegisterBookView.vue'
 
-// Importe as novas views
+// Importação de views
 import SearchBookView from '../views/SearchBookView.vue'
 import RegisterLoanView from '../views/RegisterLoanView.vue'
 import RegisterReturnView from '../views/RegisterReturnView.vue'
 import HistoryView from '../views/HistoryView.vue'
+import UserManagementView from '@/views/UserManagementView.vue'
+import RegisterUserView from '@/views/RegisterUserView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,12 +20,12 @@ const router = createRouter({
     { path: '/login', name: 'login', component: LoginView },
     { path: '/', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
     { path: '/registrar-livro', name: 'register-book', component: RegisterBookView, meta: { requiresAuth: true } },
-    
-    // Adicione as rotas para as novas views
+    { path: '/registrar-usuario', name: 'register-user', component: RegisterUserView, meta: { requiresAuth: true } },
     { path: '/pesquisar-livro', name: 'search-book', component: SearchBookView, meta: { requiresAuth: true } },
     { path: '/registrar-emprestimo/:id', name: 'register-loan', component: () => import('../views/RegisterLoanView.vue'), meta: { requiresAuth: true } },
     { path: '/registrar-devolucao/:loanId', name: 'register-return', component: () => import('../views/RegisterReturnView.vue'), meta: { requiresAuth: true } },
-    { path: '/historico', name: 'history', component: HistoryView, meta: { requiresAuth: true } }
+    { path: '/historico', name: 'history', component: HistoryView, meta: { requiresAuth: true } },
+    { path: '/usuario', name: 'user-management', component: UserManagementView, meta: { requiresAuth: true } }
   ]
 })
 
