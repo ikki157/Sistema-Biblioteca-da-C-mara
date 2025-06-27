@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useBookStore } from './bookStore';
 
 export const useLoanStore = defineStore('loans', {
   state: () => ({
@@ -8,92 +7,57 @@ export const useLoanStore = defineStore('loans', {
   }),
 
   getters: {
-    totalLoans: (state) => {
-      return state.history.filter(event => event.type === 'Empréstimo').length;
-    },
-    
-    // NOVO GETTER: Conta o total de eventos de devolução.
-    totalReturns: (state) => {
-      return state.history.filter(event => event.type === 'Devolução').length;
-    },
-
-    // LÓGICA CORRIGIDA: Calcula quantos livros estão emprestados *agora*.
+    totalLoans: (state) => state.history.filter(e => e.type === 'Empréstimo').length,
+    totalReturns: (state) => state.history.filter(e => e.type === 'Devolução').length,
     currentlyLoanedCount: (state) => {
-      const loanedIds = new Set();
-      const returnedIds = new Set();
-
-      // Mapeia todos os empréstimos e devoluções pelos seus IDs únicos.
+      const activeLoans = new Set();
       state.history.forEach(event => {
-        if (event.type === 'Empréstimo') {
-          loanedIds.add(event.loanId);
-        } else if (event.type === 'Devolução') {
-          returnedIds.add(event.loanId);
-        }
+        if (event.type === 'Empréstimo') activeLoans.add(event.loanId);
+        else if (event.type === 'Devolução') activeLoans.delete(event.loanId);
       });
-
-      // Remove os IDs que já foram devolvidos do conjunto de emprestados.
-      returnedIds.forEach(id => {
-        loanedIds.delete(id);
-      });
-
-      // O tamanho final do conjunto é o número de empréstimos ativos.
-      return loanedIds.size;
+      return activeLoans.size;
     },
   },
 
   actions: {
-    registerLoan(bookId, readerName) {
-      const bookStore = useBookStore();
-      const success = bookStore.updateBookStatus(bookId, 'loan');
-      
-      if (success) {
-        const book = bookStore.getBookById(bookId);
-        const loanEvent = {
-          id: this.nextHistoryId++,
-          loanId: `${bookId}-${new Date().getTime()}`,
-          type: 'Empréstimo',
-          book: { ...book },
-          readerName: readerName,
-          date: new Date(),
-        };
-        this.history.unshift(loanEvent);
-        return true;
-      }
-      return false;
+    registerLoan(book, readerName) {
+      const loanEvent = {
+        id: this.nextHistoryId++,
+        loanId: `${book.id}-${new Date().getTime()}`,
+        type: 'Empréstimo',
+        book: { ...book },
+        readerName: readerName,
+        date: new Date(),
+      };
+      this.history.unshift(loanEvent);
     },
 
     registerReturn(loanId) {
-      const bookStore = useBookStore();
-      const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
-      
+      const loanEvent = this.history.find(e => e.loanId === loanId);
       if (loanEvent) {
-        const success = bookStore.updateBookStatus(loanEvent.book.id, 'return');
-        if (success) {
-          const returnEvent = {
-            id: this.nextHistoryId++,
-            loanId: loanId,
-            type: 'Devolução',
-            book: { ...loanEvent.book },
-            readerName: loanEvent.readerName,
-            date: new Date(),
-          };
-          this.history.unshift(returnEvent);
-          return true;
-        }
+        const returnEvent = {
+          id: this.nextHistoryId++,
+          loanId: loanId,
+          type: 'Devolução',
+          book: { ...loanEvent.book },
+          readerName: loanEvent.readerName,
+          date: new Date(),
+        };
+        this.history.unshift(returnEvent);
       }
-      return false;
     },
-
-    logBookDeletion(book) {
+    
+    // Ação para registrar a exclusão de um usuário no histórico.
+    logUserDeletion(user) {
       const deletionEvent = {
         id: this.nextHistoryId++,
-        loanId: `delete-${book.id}-${new Date().getTime()}`, // ID único para o evento
-        type: 'Exclusão',
-        book: { ...book }, // Salva uma cópia dos dados do livro que foi excluído
-        readerName: 'N/A', // Não se aplica a uma exclusão
+        type: 'Exclusão de Usuário',
+        // Não temos um livro aqui, então guardamos os dados do usuário.
+        book: { title: `Usuário: ${user.name}` }, 
+        readerName: `ID: ${user.id}`, // Guardamos o ID para referência
         date: new Date(),
       };
       this.history.unshift(deletionEvent);
-    },
+    }
   },
 });

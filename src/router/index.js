@@ -12,7 +12,7 @@ import RegisterReturnView from '../views/RegisterReturnView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import UserManagementView from '@/views/UserManagementView.vue'
 import RegisterUserView from '@/views/RegisterUserView.vue'
-
+import EditUserView from '@/views/EditUserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,7 +25,8 @@ const router = createRouter({
     { path: '/registrar-emprestimo/:id', name: 'register-loan', component: () => import('../views/RegisterLoanView.vue'), meta: { requiresAuth: true } },
     { path: '/registrar-devolucao/:loanId', name: 'register-return', component: () => import('../views/RegisterReturnView.vue'), meta: { requiresAuth: true } },
     { path: '/historico', name: 'history', component: HistoryView, meta: { requiresAuth: true } },
-    { path: '/usuario', name: 'user-management', component: UserManagementView, meta: { requiresAuth: true } }
+    { path: '/usuario', name: 'user-management', component: UserManagementView, meta: { requiresAuth: true } },
+    { path: '/editar-usuario/:id', name: 'edit-user', component: EditUserView, meta: { requiresAuth: true } }
   ]
 })
 

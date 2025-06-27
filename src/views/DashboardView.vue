@@ -8,7 +8,7 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <h5 class="card-title">Total de Cópias</h5>
+                <h5 class="card-title">Total de Exemplares</h5>
                 <p class="card-text fs-2 fw-bold">{{ bookStore.totalBookCopies || 0 }}</p>
               </div>
               <i class="bi bi-collection fs-1 opacity-50"></i>
@@ -16,6 +16,23 @@
           </div>
           <RouterLink to="/pesquisar-livro" class="card-footer-link">
             Ver acervo <i class="bi bi-arrow-right-circle"></i>
+          </RouterLink>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-secondary shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title">Total de Usuários</h5>
+                <p class="card-text fs-2 fw-bold">{{ userStore.totalUsers || 0 }}</p>
+              </div>
+              <i class="bi bi-collection fs-1 opacity-50"></i>
+            </div>
+          </div>
+          <RouterLink to="/usuario" class="card-footer-link">
+            Ver Usuários <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>
       </div>
@@ -49,7 +66,7 @@
             </div>
           </div>
           <RouterLink to="/historico" class="card-footer-link">
-            Ver relatórios <i class="bi bi-arrow-right-circle"></i>
+            Ver histórico <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>
       </div>
@@ -60,7 +77,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h5 class="card-title">Devoluções Totais</h5>
-                <p class="card-text fs-2 fw-bold">{{ loanStore.totalReturns || 0 }}</p> <!-- O "|| 0" resolve o problema de undefined -->
+                <p class="card-text fs-2 fw-bold">{{ loanStore.totalReturns || 0 }}</p> 
               </div>
               <i class="bi bi-journal-check fs-1 opacity-50"></i>
             </div>
@@ -79,9 +96,11 @@
 import { RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
 import { useLoanStore } from '@/store/loanStore';
+import { useUserStore } from '@/store/userStore';
 
 const bookStore = useBookStore();
 const loanStore = useLoanStore();
+const userStore = useUserStore();
 </script>
 
 <style scoped>

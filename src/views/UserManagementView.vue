@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
       <div class="mb-3">
-        <input type="text" v-model="searchQuery" class="form-control" placeholder="Pesquisar por nome, ID, endereço, data de nasc., etc...">
+        <input type="text" v-model="searchQuery" class="form-control" placeholder="Pesquisar usuários...">
       </div>
 
       <div class="table-responsive">
@@ -29,7 +29,7 @@
           </thead>
           <tbody>
             <tr v-if="!filteredUsers.length">
-              <td colspan="7" class="text-center text-muted py-4">Nenhum usuário encontrado.</td>
+              <td colspan="6" class="text-center text-muted py-4">Nenhum usuário encontrado.</td>
             </tr>
             <tr v-for="user in filteredUsers" :key="user.id">
               <td>{{ user.name }}</td>
@@ -39,14 +39,14 @@
               <td>{{ user.phone }}</td>
               <td>{{ user.email }}</td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-2" title="Editar Usuário (em breve)">
+                <button class="btn btn-sm btn-outline-primary me-2" title="Editar Usuário" @click="$router.push({ name: 'edit-user', params: { id: user.id } })">
                   <i class="bi bi-pencil"></i>
                 </button>
                 <button 
                   @click="promptForDelete(user.id)" 
                   class="btn btn-sm btn-outline-danger"
-                  :title="hasActiveLoan(user.id) ? 'Usuário com empréstimos ativos não pode ser excluído' : 'Excluir Usuário'"
-                  :disabled="hasActiveLoan(user.id)">
+                  :title="hasActiveLoan(user) ? 'Usuário com empréstimos ativos não pode ser excluído' : 'Excluir Usuário'"
+                  :disabled="hasActiveLoan(user)">
                   <i class="bi bi-trash"></i>
                 </button>
               </td>
@@ -76,51 +76,49 @@ const userToDeleteId = ref(null);
 
 const filteredUsers = computed(() => {
   if (!searchQuery.value) return userStore.users;
-
-  const lowerCaseQuery = searchQuery.value.toLowerCase();
+  const q = searchQuery.value.toLowerCase();
   return userStore.users.filter(user => 
-    user.name.toLowerCase().includes(lowerCaseQuery) ||
-    user.address.toLowerCase().includes(lowerCaseQuery) ||
-    String(user.phone).toLowerCase().includes(lowerCaseQuery) ||
-    user.email.toLowerCase().includes(lowerCaseQuery) ||
-    String(user.numIdent).toLowerCase().includes(lowerCaseQuery) ||
-    (user.dateNasc && String(user.dateNasc).toLowerCase().includes(lowerCaseQuery))
+    user.name.toLowerCase().includes(q) ||
+    user.address?.toLowerCase().includes(q) ||
+    String(user.phone).toLowerCase().includes(q) ||
+    user.email.toLowerCase().includes(q) ||
+    String(user.numIdent).toLowerCase().includes(q) ||
+    String(user.dateNasc).toLowerCase().includes(q)
   );
 });
 
-const hasActiveLoan = (userId) => {
-  const user = userStore.getUserById(userId);
+// A função de verificação agora recebe o objeto 'user' inteiro
+const hasActiveLoan = (user) => {
   if (!user) return false;
-
-  const loanStatus = {}; 
+  const activeLoans = new Set();
   loanStore.history.forEach(event => {
     if (event.readerName === user.name) {
-      if (event.type === 'Empréstimo') {
-        loanStatus[event.loanId] = 'emprestado'; 
-      } else if (event.type === 'Devolução') {
-        loanStatus[event.loanId] = 'devolvido'; 
-      }
+      if (event.type === 'Empréstimo') activeLoans.add(event.loanId);
+      else if (event.type === 'Devolução') activeLoans.delete(event.loanId);
     }
   });
-
-  return Object.values(loanStatus).some(status => status === 'emprestado');
+  return activeLoans.size > 0;
 };
 
 const promptForDelete = (userId) => {
-
-  if (hasActiveLoan(userId)) {
+  const user = userStore.getUserById(userId);
+  if (hasActiveLoan(user)) {
     alert('Ação não permitida: Este usuário possui empréstimos ativos e não pode ser excluído.');
     return;
   }
-
   userToDeleteId.value = userId;
   showPasswordModal.value = true;
 };
 
 const handleActualDeletion = () => {
-
   if (userToDeleteId.value) {
-    userStore.deleteUser(userToDeleteId.value);
+    const user = userStore.getUserById(userToDeleteId.value);
+    if (user) {
+      // 1. Primeiro, registra a exclusão no histórico
+      loanStore.logUserDeletion(user);
+      // 2. Depois, remove o usuário do acervo
+      userStore.deleteUser(userToDeleteId.value);
+    }
     userToDeleteId.value = null;
   }
 };

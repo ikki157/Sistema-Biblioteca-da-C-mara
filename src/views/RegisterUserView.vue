@@ -28,21 +28,22 @@
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
+            
+              <div class="mb-3">
                 <label for="userAddress" class="form-label">Endereço</label>
                 <input type="text" v-model="user.address" class="form-control" placeholder="Digite o endereço" id="userAddress" required>
               </div>
+
+            <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="userPhone" class="form-label">Telefone</label>
                 <input type="text" v-model="user.phone" class="form-control" placeholder="Digite o telefone" id="userPhone" required>
               </div>
-            </div>
-
-              <div class="mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="userEmail" class="form-label">Email</label>
                 <input type="text" v-model="user.email" class="form-control" placeholder="Digite o email" id="userEmail" required>
               </div>
+            </div>
 
             <div class="pt-3 border-top mt-4">
               <button type="submit" class="btn btn-primary">
