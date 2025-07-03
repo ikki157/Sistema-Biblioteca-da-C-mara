@@ -17,8 +17,15 @@
 
         <form @submit.prevent="promptForPasswordConfirmation" v-if="!successMessage">
           <div class="mb-3">
-            <label for="userName" class="form-label">Nome do Leitor</label>
-            <input type="text" v-model="readerName" class="form-control" id="userName" required>
+
+            <label for="readerSelect" class="form-label">Selecione o Leitor:</label>
+            <select v-model="selectUserId" class="form-select" id="readerSelect" required>
+              <option disabled value="">-- Por favor, escolha um leitor --</option>
+              <option v-for="user in userStore.users" :key="user.id" :value="user.id">
+                {{ user.name }} ({{ user.email }})
+              </option>
+            </select>
+
           </div>
           <button type="submit" class="btn btn-primary">Confirmar Empréstimo</button>
         </form>
@@ -37,14 +44,17 @@ import { ref, onMounted } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
 import { useLoanStore } from '@/store/loanStore';
+import { useUserStore } from '@/store/userStore';
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const route = useRoute();
 const bookStore = useBookStore();
 const loanStore = useLoanStore();
+const userStore = useUserStore();
+
 
 const book = ref(null);
-const readerName = ref('');
+const selectUserId = ref('');
 const showPasswordModal = ref(false);
 const successMessage = ref('');
 
