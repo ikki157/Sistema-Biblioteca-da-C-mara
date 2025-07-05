@@ -75,17 +75,6 @@ onMounted(() => {
   dueDate.value = defaultDueDate.toISOString().split('T')[0]; 
 });
 
-const handleActualLoan = () => {
-  if (book.value) {
-    const success = loanStore.registerLoan(book.value.id, readerName.value);
-    if (success) {
-      successMessage.value = `Empréstimo do livro "${book.value.title}" para ${readerName.value} registrado com sucesso!`;
-    } else {
-      alert('Erro: Não há cópias disponíveis deste livro.');
-    }
-  }
-};
-
 const handleLoanRegistration = () => {
 
   if (!selectUserId.value) {

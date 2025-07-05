@@ -80,6 +80,26 @@ export const useLoanStore = defineStore('loans', {
         date: new Date(),
       };
       this.history.unshift(deletionEvent);
-    }
+    },
+
+    extendDueDate(loanId, newDueDate) {
+      const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
+      if (loanEvent) {
+        loanEvent.dueDate = newDueDate;
+        const extensionEvent = {
+          type: 'Renovação',
+          loanId: loanId,
+          book: loanEvent.book,
+          user: loanEvent.user,
+          date: new Date().toISOString(),
+          newDueDate: newDueDate,
+        };
+        this.history.unshift(extensionEvent);
+        
+        return true;
+      }
+      return false;
+    },
+
   },
 });

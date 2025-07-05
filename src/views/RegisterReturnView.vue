@@ -1,26 +1,27 @@
 <template>
-  <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-      <h2 class="h4 mb-0">Registrar Devolução</h2>
-      <RouterLink to="/pesquisar-livro" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Voltar</RouterLink>
+ <div class="card">
+    <div class="card-header">
+      <h2 class="h4">Gerenciar Empréstimo</h2>
     </div>
-    <div class="card-body p-4">
-      <div v-if="loanEvent">
-        <div class="alert alert-info">
-          <h5 class="alert-heading">Devolvendo: {{ loanEvent.book.title }}</h5>
-          <p class="mb-0"><strong>Emprestado para:</strong> {{ loanEvent.readerName }}</p>
-        </div>
+    <div class="card-body" v-if="loan">
+      <h4>Detalhes do Empréstimo</h4>
+      <p><strong>Livro:</strong> {{ loan.book.title }}</p>
+      <p><strong>Leitor:</strong> {{ loan.user.name }}</p>
+      <p><strong>Data de Devolução Atual:</strong> {{ new Date(loan.dueDate).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) }}</p>
+      <button @click="handleReturn" class="btn btn-success">Confirmar Devolução</button>
 
-        <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
-        
-        <form @submit.prevent="promptForPasswordConfirmation" v-if="!successMessage">
-          <p>Confirme a devolução deste item.</p>
-          <button type="submit" class="btn btn-primary">Confirmar Devolução</button>
-        </form>
+      <hr class="my-4">
+
+      <h4>Estender Prazo de Devolução</h4>
+      <div class="mb-3">
+        <label for="newDueDate" class="form-label">Nova Data de Devolução:</label>
+        <input type="date" id="newDueDate" class="form-control" v-model="newDueDate">
       </div>
-      <div v-else class="alert alert-danger">
-        Registro de empréstimo não encontrado.
-      </div>
+      <button @click="handleExtension" class="btn btn-primary">Confirmar Renovação</button>
+
+    </div>
+    <div class="card-footer">
+        <RouterLink to="/pesquisar-livro" class="btn btn-outline-secondary">Voltar</RouterLink>
     </div>
   </div>
   
@@ -28,35 +29,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { useLoanStore } from '@/store/loanStore';
+import { useToast } from 'vue-toastification';
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const route = useRoute();
 const router = useRouter();
 const loanStore = useLoanStore();
+const toast = useToast();
 
 const loanEvent = ref(null);
 const showPasswordModal = ref(false);
 const successMessage = ref('');
 
+const loanId = parseInt(route.params.loanId);
+const loan = computed(() => loanStore.history.find(e => e.loanId === loanId && e.type === 'Empréstimo'));
+const newDueDate = ref('');
+
 onMounted(() => {
-  const loanId = route.params.loanId;
-  loanEvent.value = loanStore.history.find(e => e.loanId === loanId);
+  if (loan.value) {
+    const suggestedDueDate = new Date(loan.value.date);
+    suggestedDueDate.setDate(suggestedDueDate.getDate() + 7);
+    newDueDate.value = suggestedDueDate.toISOString().split('T')[0];
+  }
 });
 
 const promptForPasswordConfirmation = () => showPasswordModal.value = true;
 
-const handleActualReturn = () => {
-  if (loanEvent.value) {
-    const success = loanStore.registerReturn(loanEvent.value.loanId);
-    if (success) {
-      successMessage.value = 'Devolução registrada com sucesso!';
-      setTimeout(() => router.push('/pesquisar-livro'), 2000); // Redireciona após 2s
-    } else {
-      alert('Ocorreu um erro ao processar a devolução.');
-    }
+const handleReturn = () => {
+  loanStore.registerReturn(loanId);
+  toast.success(`Livro "${loan.value.book.title}" devolvido com sucesso!`);
+  router.push('/pesquisar-livro');
+};
+
+const handleExtension = () => {
+  if (loanStore.extendable(loanId, newDueDate.value)) {
+    toast.success(`Prazo de devolução estendido até ${new Date(newDueDate.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}.`);
+    router.push('/pesquisar-livro');
+  } else {
+    toast.error('Não foi possível estender o prazo.');
   }
 };
 </script>
