@@ -33,25 +33,12 @@
               <td>{{ book.available }} / {{ book.quantity }}</td>
               <td class="text-center">
                <button @click="goToLoanPage(book.id)" class="btn btn-primary btn-sm me-2">Emprestar</button>
-              
-               <div v-if="getActiveLoansForBook(book.id).length > 0">
-                 <ul class="list-group list-group-flush mt-2">
-                   <li
-                     v-for="loan in getActiveLoansForBook(book.id)"
-                     :key="loan.loanId"
-                     class="list-group-item d-flex justify-content-between align-items-center p-1"
-                   >
-                        <span>Emprestado para: {{ loan.user.name }}</span>
-                        <button @click="goToReturnPage(loan.loanId)" class="btn btn-success btn-sm">
-                          Devolver
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-
+                  
+               <button @click="handleReturnClick(loan)" v-if="getActiveLoansForBook(book.id).length > 0" class="btn btn-success btn-sm">Devolver</button>
+                        
                 <button 
                   @click="promptForDelete(book.id)" 
-                  class="btn btn-sm btn-outline-danger" 
+                  class="btn  btn-sm btn-outline-danger ms-2" 
                   :disabled="book.loanedOut > 0"
                   :title="book.loanedOut > 0 ? 'Livro com cópias emprestadas não pode ser excluído' : 'Excluir Livro'">
                   <i class="bi bi-trash"></i>
@@ -130,13 +117,22 @@ const handleActualDeletion = () => {
   }
 };
 
-const getActiveLoans = (bookId) => {
+const getActiveLoansForBook = (bookId) => {
   const returnedLoanIds = new Set(loanStore.history
     .filter(event => event.type === 'Devolução')
     .map(event => event.loanId));
 
   return loanStore.history.filter(event => event.type === 'Empréstimo' && event.book.id === bookId && !returnedLoanIds.has(event.loanId));
 };
+
+const handleReturnClick = (loanObject) => {
+  console.log('Objeto recebido no clique de devolução:', loanObject);
+  if (loanObject && loanObject.loanId) {
+    goToReturnPage(loanObject.loanId);
+  } else {
+    console.error('ERRO: O objeto de empréstimo está indefinido no momento do clique!');
+  }
+}
 </script>
 
 <style scoped>
