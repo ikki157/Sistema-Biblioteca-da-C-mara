@@ -25,7 +25,7 @@ export const useLoanStore = defineStore('loans', {
 
   actions: {
     
-    registerLoan(book, user) {
+    registerLoan(book, user, dueDate) {
       const bookStore = useBookStore();
             
       if (book.available > 0) { 
@@ -35,6 +35,7 @@ export const useLoanStore = defineStore('loans', {
           book: { id: book.id, title: book.title },
           user: { id: user.id, name: user.name },
           date: new Date().toISOString(),
+          dueDate: dueDate,
         };
 
         this.history.push(loanEvent);

@@ -26,6 +26,11 @@
               </option>
             </select>
 
+            <div>
+              <label for="dueDate" class="form-label">Data de Devolução:</label>
+              <input type="date" v-model="dueDate" class="form-control" id="dueDate" required />
+            </div>
+
           </div>
           <button type="submit" class="btn btn-primary">Confirmar Empréstimo</button>
         </form>
@@ -60,10 +65,14 @@ const selectUserId = ref('');
 const showPasswordModal = ref(false);
 const successMessage = ref('');
 const bookId = parseInt(route.params.id);
+const dueDate = ref('');
 
 onMounted(() => {
   const bookId = parseInt(route.params.id);
   book.value = bookStore.getBookById(bookId);
+  const defaultDueDate = new Date();
+  defaultDueDate.setDate(defaultDueDate.getDate() + 14);
+  dueDate.value = defaultDueDate.toISOString().split('T')[0]; 
 });
 
 const handleActualLoan = () => {
@@ -88,8 +97,8 @@ const handleLoanRegistration = () => {
   const userToLoan = userStore.getUserById(selectUserId.value);
 
   if (bookToLoan && userToLoan) {
-    loanStore.registerLoan(bookToLoan, userToLoan);
-    toast.success(`Livro "${bookToLoan.title}" emprestado para ${userToLoan.name}!`);
+    loanStore.registerLoan(bookToLoan, userToLoan, dueDate.value);
+    toast.success(`Empréstimo registrado! Devolver até ${new Date(dueDate.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}.`);
     router.push('/pesquisar-livro');
   } else {
     toast.error('Erro ao registrar empréstimo. Verifique os dados do livro ou do Usuário.');
