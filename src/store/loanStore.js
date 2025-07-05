@@ -24,44 +24,36 @@ export const useLoanStore = defineStore('loans', {
   },
 
   actions: {
-    /**
-     * Lógica de Empréstimo Corrigida
-     */
-    registerLoan(bookId, readerName) {
+    
+    registerLoan(book, user) {
       const bookStore = useBookStore();
-      
-      // 1. Pergunta ao Acervo se o livro pode ser emprestado.
-      const success = bookStore.updateBookStatus(bookId, 'loan');
-      
-      // 2. Só se o Acervo permitir, o empréstimo é registado no histórico.
-      if (success) {
-        const book = bookStore.getBookById(bookId);
+            
+      if (book.available > 0) { 
         const loanEvent = {
-          id: this.nextHistoryId++,
-          loanId: `${book.id}-${new Date().getTime()}`,
+          loanId: this.nextLoanId,
           type: 'Empréstimo',
-          book: { ...book },
-          readerName: readerName,
-          date: new Date(),
+          book: { id: book.id, title: book.title },
+          user: { id: user.id, name: user.name },
+          date: new Date().toISOString(),
         };
-        this.history.unshift(loanEvent);
-        return true;
+
+        this.history.push(loanEvent);
+        this.nextLoanId++;
+        bookStore.decreaseAvailability(book.id);
+      } else {
+        console.error('Livro não disponível para empréstimo');
+        return false;
       }
-      return false; // Se o Acervo negar, a operação falha.
     },
 
-    /**
-     * Lógica de Devolução Corrigida
-     */
+    
     registerReturn(loanId) {
       const bookStore = useBookStore();
       const loanEvent = this.history.find(e => e.loanId === loanId);
       
       if (loanEvent) {
-        // 1. Avisa o Acervo que um livro está a ser devolvido.
         const success = bookStore.updateBookStatus(loanEvent.book.id, 'return');
 
-        // 2. Só se o Acervo confirmar, a devolução é registada no histórico.
         if (success) {
           const returnEvent = {
             id: this.nextHistoryId++,

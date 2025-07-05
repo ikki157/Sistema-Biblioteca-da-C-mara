@@ -86,7 +86,8 @@ const filteredBooks = computed(() => {
 });
 
 const goToLoanPage = (bookId) => {
-  router.push(`/registrar-emprestimo/${bookId}`);
+  console.log('Função goToLoanPage chamada com o ID do livro:', bookId);
+  router.push({ name: 'register-loan', params: { id: bookId } });
 };
 
 const goToReturnPage = (bookId) => {

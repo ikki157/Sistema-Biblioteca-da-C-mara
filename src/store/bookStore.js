@@ -37,29 +37,36 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    /**
-     * Ação central e crucial para mudar o status de um livro.
-     * Esta é a única função que deve alterar a disponibilidade.
-     */
     updateBookStatus(bookId, actionType) {
       const book = this.getBookById(bookId);
       if (!book) return false;
 
-      // Se a ação é um empréstimo E há livros disponíveis
       if (actionType === 'loan' && book.available > 0) {
         book.available--;
         book.loanedOut++;
-        return true; // Sucesso
-      } 
-      // Se a ação é uma devolução E há livros emprestados para devolver
-      else if (actionType === 'return' && book.loanedOut > 0) {
+        return true;
+      } else if (actionType === 'return' && book.loanedOut > 0) {
         book.available++;
         book.loanedOut--;
-        return true; // Sucesso
+        return true;
       }
-
-      // Se nenhuma condição for atendida, a ação falha.
       return false;
+    },
+
+    decreaseAvailability(bookId) {
+      const book = this.getBookById(bookId);
+      if (book && book.available > 0) {
+        book.available--;
+        book.loanedOut++;
+      }
+    },
+
+    increaseAvailability(bookId) {
+      const book = this.getBookById(bookId);
+      if (book) {
+        book.available++;
+        book.loanedOut--;
+      }
     },
   },
 });

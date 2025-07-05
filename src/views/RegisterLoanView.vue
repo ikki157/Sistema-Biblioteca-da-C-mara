@@ -15,7 +15,7 @@
 
         <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-        <form @submit.prevent="promptForPasswordConfirmation" v-if="!successMessage">
+        <form @submit.prevent="handleLoanRegistration" v-if="!successMessage">
           <div class="mb-3">
 
             <label for="readerSelect" class="form-label">Selecione o Leitor:</label>
@@ -41,45 +41,58 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute, RouterLink } from 'vue-router';
+import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
 import { useLoanStore } from '@/store/loanStore';
 import { useUserStore } from '@/store/userStore';
+import { useToast } from 'vue-toastification';
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const route = useRoute();
 const bookStore = useBookStore();
 const loanStore = useLoanStore();
 const userStore = useUserStore();
-
+const toast = useToast();
+const router = useRouter();
 
 const book = ref(null);
 const selectUserId = ref('');
 const showPasswordModal = ref(false);
 const successMessage = ref('');
+const bookId = parseInt(route.params.id);
 
 onMounted(() => {
   const bookId = parseInt(route.params.id);
   book.value = bookStore.getBookById(bookId);
 });
 
-const promptForPasswordConfirmation = () => {
-  if (readerName.value.trim() === '') {
-    alert('Por favor, insira o nome do leitor.');
-    return;
-  }
-  showPasswordModal.value = true;
-};
-
 const handleActualLoan = () => {
   if (book.value) {
     const success = loanStore.registerLoan(book.value.id, readerName.value);
     if (success) {
       successMessage.value = `Empréstimo do livro "${book.value.title}" para ${readerName.value} registrado com sucesso!`;
-      // O formulário é ocultado pela diretiva v-if no template
     } else {
       alert('Erro: Não há cópias disponíveis deste livro.');
     }
+  }
+};
+
+const handleLoanRegistration = () => {
+
+  if (!selectUserId.value) {
+    toast.error('Por favor, selecione um leitor.');
+    return;
+  }
+
+  const bookToLoan = bookStore.getBookById(bookId);
+  const userToLoan = userStore.getUserById(selectUserId.value);
+
+  if (bookToLoan && userToLoan) {
+    loanStore.registerLoan(bookToLoan, userToLoan);
+    toast.success(`Livro "${bookToLoan.title}" emprestado para ${userToLoan.name}!`);
+    router.push('/pesquisar-livro');
+  } else {
+    toast.error('Erro ao registrar empréstimo. Verifique os dados do livro ou do Usuário.');
   }
 };
 </script>

@@ -27,7 +27,7 @@
                 </span>
               </td>
               <td>{{ event.book.title }} (Cód: {{ event.book.code }})</td>
-              <td>{{ event.readerName !== 'N/A' ? event.readerName : '—' }}</td>
+              <td>{{ event.user.name !== 'N/A' ? event.user.name : '—' }}</td>
             </tr>
           </tbody>
         </table>
