@@ -32,13 +32,22 @@
               <td>{{ book.genre }}</td>
               <td>{{ book.available }} / {{ book.quantity }}</td>
               <td class="text-center">
-                <button @click="goToLoanPage(book.id)" class="btn btn-sm btn-primary me-2" :disabled="book.available === 0" title="Emprestar Livro">
-                  <i class="bi bi-box-arrow-up-right"></i> Emprestar
-                </button>
-                
-                <button v-if="book.loanedOut > 0" @click="goToReturnPage(book.id)" class="btn btn-sm btn-success me-2" title="Devolver Livro">
-                  <i class="bi bi-box-arrow-down-left"></i> Devolver
-                </button>
+               <button @click="goToLoanPage(book.id)" class="btn btn-primary btn-sm me-2">Emprestar</button>
+              
+               <div v-if="getActiveLoansForBook(book.id).length > 0">
+                 <ul class="list-group list-group-flush mt-2">
+                   <li
+                     v-for="loan in getActiveLoansForBook(book.id)"
+                     :key="loan.loanId"
+                     class="list-group-item d-flex justify-content-between align-items-center p-1"
+                   >
+                        <span>Emprestado para: {{ loan.user.name }}</span>
+                        <button @click="goToReturnPage(loan.loanId)" class="btn btn-success btn-sm">
+                          Devolver
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
 
                 <button 
                   @click="promptForDelete(book.id)" 
@@ -91,9 +100,10 @@ const goToLoanPage = (bookId) => {
 };
 
 const goToReturnPage = (bookId) => {
+  console.log('Tentando ir para a página de devolução com o ID de empréstimo:', loanId);
   const activeLoan = loanStore.history.find(e => e.book.id === bookId && !loanStore.history.some(r => r.loanId === e.loanId && r.type === 'Devolução'));
   if (activeLoan) {
-    router.push(`/registrar-devolucao/${activeLoan.loanId}`);
+    router.push({ name: 'register-return', params: { loanId: activeLoan.loanId } });
   } else {
     alert('Não foi encontrado um empréstimo ativo para este livro.');
   }
@@ -111,7 +121,6 @@ const promptForDelete = (bookId) => {
   showPasswordModal.value = true;
 };
 
-// Esta função é chamada pelo evento 'success' do modal
 const handleActualDeletion = () => {
   console.log('3. Sinal "success" recebido! A página vai executar a exclusão.');
   
@@ -119,6 +128,14 @@ const handleActualDeletion = () => {
     bookStore.deleteBook(bookToDeleteId.value);
     bookToDeleteId.value = null;
   }
+};
+
+const getActiveLoans = (bookId) => {
+  const returnedLoanIds = new Set(loanStore.history
+    .filter(event => event.type === 'Devolução')
+    .map(event => event.loanId));
+
+  return loanStore.history.filter(event => event.type === 'Empréstimo' && event.book.id === bookId && !returnedLoanIds.has(event.loanId));
 };
 </script>
 

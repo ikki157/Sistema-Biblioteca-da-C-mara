@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <PasswordModal v-model="showPasswordModal" @success="handleActualLoan" />
+  <PasswordModal v-model="showPasswordModal" @success="handleLoanRegistration" />
 </template>
 
 <script setup>

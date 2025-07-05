@@ -1,8 +1,14 @@
 <template>
  <div class="card">
+
     <div class="card-header">
       <h2 class="h4">Gerenciar Empréstimo</h2>
     </div>
+
+    <div class="card-footer">
+        <RouterLink to="/pesquisar-livro" class="btn btn-outline-secondary">Voltar</RouterLink>
+    </div>
+
     <div class="card-body" v-if="loan">
       <h4>Detalhes do Empréstimo</h4>
       <p><strong>Livro:</strong> {{ loan.book.title }}</p>
@@ -20,12 +26,13 @@
       <button @click="handleExtension" class="btn btn-primary">Confirmar Renovação</button>
 
     </div>
-    <div class="card-footer">
-        <RouterLink to="/pesquisar-livro" class="btn btn-outline-secondary">Voltar</RouterLink>
-    </div>
   </div>
   
-  <PasswordModal v-model="showPasswordModal" @success="handleActualReturn" />
+  <PasswordModal v-model="showPasswordModal" @success="handleReturn" />
+  <PasswordModal v-model="showPasswordModal" @success="handleExtension" />
+  <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+  <div v-if="!loan" class="alert alert-danger">Empréstimo não encontrado ou inválido.</div>
+  
 </template>
 
 <script setup>

@@ -5,7 +5,6 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import RegisterBookView from '../views/RegisterBookView.vue'
 
-// Importação de views
 import SearchBookView from '../views/SearchBookView.vue'
 import RegisterLoanView from '../views/RegisterLoanView.vue'
 import RegisterReturnView from '../views/RegisterReturnView.vue'
