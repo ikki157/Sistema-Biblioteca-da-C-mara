@@ -34,7 +34,7 @@
               <td class="text-center">
                <button @click="goToLoanPage(book.id)" class="btn btn-primary btn-sm me-2">Emprestar</button>
                   
-               <button @click="handleReturnClick(loan)" v-if="getActiveLoansForBook(book.id).length > 0" class="btn btn-success btn-sm">Devolver</button>
+               <button @click="goToReturnPage(loan.loanId)" v-if="loan in getActiveLoansForBook(book.id).length > 0" class="btn btn-success btn-sm">Devolver</button>
                         
                 <button 
                   @click="promptForDelete(book.id)" 
@@ -86,13 +86,11 @@ const goToLoanPage = (bookId) => {
   router.push({ name: 'register-loan', params: { id: bookId } });
 };
 
-const goToReturnPage = (bookId) => {
-  console.log('Tentando ir para a página de devolução com o ID de empréstimo:', loanId);
-  const activeLoan = loanStore.history.find(e => e.book.id === bookId && !loanStore.history.some(r => r.loanId === e.loanId && r.type === 'Devolução'));
-  if (activeLoan) {
-    router.push({ name: 'register-return', params: { loanId: activeLoan.loanId } });
+const goToReturnPage = (loanId) => {
+  if (loanId) {
+    router.push({ name: 'register-return', params: { loanId: loanId } });
   } else {
-    alert('Não foi encontrado um empréstimo ativo para este livro.');
+    console.error("Tentativa de devolução com um loanId inválido!");
   }
 };
 
@@ -125,14 +123,6 @@ const getActiveLoansForBook = (bookId) => {
   return loanStore.history.filter(event => event.type === 'Empréstimo' && event.book.id === bookId && !returnedLoanIds.has(event.loanId));
 };
 
-const handleReturnClick = (loanObject) => {
-  console.log('Objeto recebido no clique de devolução:', loanObject);
-  if (loanObject && loanObject.loanId) {
-    goToReturnPage(loanObject.loanId);
-  } else {
-    console.error('ERRO: O objeto de empréstimo está indefinido no momento do clique!');
-  }
-}
 </script>
 
 <style scoped>
