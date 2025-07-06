@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { useBookStore } from './bookStore';
 
-export const useLoanStore = defineStore('loans', {
+export const useLoanStore = defineStore('loan', {
   state: () => ({
     history: [],
-    nextHistoryId: 1,
+    nextLoanId: 1,
   }),
 
   getters: {
@@ -41,6 +41,7 @@ export const useLoanStore = defineStore('loans', {
         this.history.push(loanEvent);
         this.nextLoanId++;
         bookStore.decreaseAvailability(book.id);
+
       } else {
         console.error('Livro não disponível para empréstimo');
         return false;
@@ -50,30 +51,24 @@ export const useLoanStore = defineStore('loans', {
     
     registerReturn(loanId) {
       const bookStore = useBookStore();
-      const loanEvent = this.history.find(e => e.loanId === loanId);
+      const loanEvent = this.history.find(e => e.loanId === loanId && e.type === 'Empréstimo');
       
       if (loanEvent) {
-        const success = bookStore.updateBookStatus(loanEvent.book.id, 'return');
-
-        if (success) {
-          const returnEvent = {
-            id: this.nextHistoryId++,
-            loanId: loanId,
-            type: 'Devolução',
-            book: { ...loanEvent.book },
-            readerName: loanEvent.readerName,
-            date: new Date(),
-          };
-          this.history.unshift(returnEvent);
-          return true;
-        }
+        const returnEvent = {
+          type: 'Devolução',
+          loanId: loanId,
+          book: loanEvent.book,
+          user: loanEvent.user,
+          date: new Date().toISOString(),
+        };
+        this.history.push(returnEvent);
+        bookStore.increaseAvailability(loanEvent.book.id);
       }
-      return false;
     },
     
     logUserDeletion(user) {
       const deletionEvent = {
-        id: this.nextHistoryId++,
+        id: this.nextLoanId++,
         type: 'Exclusão de Usuário',
         book: { title: `Usuário: ${user.name}` }, 
         readerName: `ID: ${user.id}`,
@@ -84,8 +79,10 @@ export const useLoanStore = defineStore('loans', {
 
     extendDueDate(loanId, newDueDate) {
       const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
+      
       if (loanEvent) {
         loanEvent.dueDate = newDueDate;
+
         const extensionEvent = {
           type: 'Renovação',
           loanId: loanId,
@@ -94,12 +91,13 @@ export const useLoanStore = defineStore('loans', {
           date: new Date().toISOString(),
           newDueDate: newDueDate,
         };
-        this.history.unshift(extensionEvent);
-        
+        this.history.push(extensionEvent);
         return true;
       }
       return false;
     },
 
   },
+
+  persist: true
 });

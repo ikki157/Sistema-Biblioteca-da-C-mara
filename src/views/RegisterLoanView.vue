@@ -15,7 +15,7 @@
 
         <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
-        <form @submit.prevent="handleLoanRegistration" v-if="!successMessage">
+        <form @submit.prevent="promptForPasswordConfirmation" v-if="!successMessage">
           <div class="mb-3">
 
             <label for="readerSelect" class="form-label">Selecione o Leitor:</label>
@@ -67,6 +67,10 @@ const successMessage = ref('');
 const bookId = parseInt(route.params.id);
 const dueDate = ref('');
 
+const promptForPasswordConfirmation = () => {
+  showPasswordModal.value = true;
+};
+
 onMounted(() => {
   const bookId = parseInt(route.params.id);
   book.value = bookStore.getBookById(bookId);
@@ -92,5 +96,6 @@ const handleLoanRegistration = () => {
   } else {
     toast.error('Erro ao registrar empréstimo. Verifique os dados do livro ou do Usuário.');
   }
+
 };
 </script>

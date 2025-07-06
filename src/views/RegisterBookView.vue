@@ -56,16 +56,16 @@
 <script setup>
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { useBookStore } from '@/store/bookStore'; // Importa o bookStore
+import { useBookStore } from '@/store/bookStore'; 
 import PasswordModal from '@/components/PasswordModal.vue';
 
-const bookStore = useBookStore(); // Inicializa o store
+const bookStore = useBookStore(); 
 
 const book = ref({
   title: '',
   author: '',
-  genre: '', // Campo adicionado
-  code: '',  // Campo adicionado
+  genre: '', 
+  code: '',  
   quantity: 1
 });
 
@@ -77,15 +77,12 @@ const promptForPasswordConfirmation = () => {
 };
 
 const handleActualRegistration = () => {
-  // Chama a ação do store para registrar o livro
   bookStore.registerBook(book.value);
   
   successMessage.value = `Sucesso! ${book.value.quantity} cópia(s) de "${book.value.title}" foram registradas.`;
   
-  // Limpa o formulário
   book.value = { title: '', author: '', genre: '', code: '', quantity: 1 };
 
-  // Oculta a mensagem de sucesso após alguns segundos
   setTimeout(() => {
     successMessage.value = '';
   }, 5000);

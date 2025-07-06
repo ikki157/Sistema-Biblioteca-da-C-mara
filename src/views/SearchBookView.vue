@@ -31,18 +31,31 @@
               <td>{{ book.author }}</td>
               <td>{{ book.genre }}</td>
               <td>{{ book.available }} / {{ book.quantity }}</td>
-              <td class="text-center">
-               <button @click="goToLoanPage(book.id)" class="btn btn-primary btn-sm me-2">Emprestar</button>
+              <td class="text-center align-middle">
+                  <button @click="promptForDelete(book.id)" class="btn btn-danger btn-sm me-2" :disabled="book.loanedOut > 0">
+                    Excluir
+                  </button>
+                  <button @click="goToLoanPage(book.id)" class="btn btn-primary btn-sm me-2" :disabled="book.available === 0">
+                    Emprestar
+                  </button>
+
+                <div v-if="getActiveLoansForBook(book.id).length > 0" class="mt-2 border-top pt-2">
+                  <small class="d-block mb-1 fw-bold">Empréstimos Ativos:</small>
                   
-               <button @click="goToReturnPage(loan.loanId)" v-if="loan in getActiveLoansForBook(book.id).length > 0" class="btn btn-success btn-sm">Devolver</button>
-                        
-                <button 
-                  @click="promptForDelete(book.id)" 
-                  class="btn  btn-sm btn-outline-danger ms-2" 
-                  :disabled="book.loanedOut > 0"
-                  :title="book.loanedOut > 0 ? 'Livro com cópias emprestadas não pode ser excluído' : 'Excluir Livro'">
-                  <i class="bi bi-trash"></i>
-                </button>
+                  <div 
+                    v-for="loan in getActiveLoansForBook(book.id)" 
+                    :key="loan.loanId" 
+                    class="d-flex justify-content-around align-items-center mb-1"
+                  >
+                    <pre style="font-size: 10px; color: red">{{ loan }}</pre>
+
+                    <span>Com: {{ loan.user.name }}</span>
+                    <button @click="goToReturnPage(loan.loanId)" class="btn btn-success btn-sm">
+                      Devolver/Renovar
+                    </button>
+                    
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>

@@ -14,7 +14,7 @@
       <p><strong>Livro:</strong> {{ loan.book.title }}</p>
       <p><strong>Leitor:</strong> {{ loan.user.name }}</p>
       <p><strong>Data de Devolução Atual:</strong> {{ new Date(loan.dueDate).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) }}</p>
-      <button @click="handleReturn" class="btn btn-success">Confirmar Devolução</button>
+      <button @click="promptForPasswordConfirmationReturn" class="btn btn-success">Confirmar Devolução</button>
 
       <hr class="my-4">
 
@@ -23,13 +23,13 @@
         <label for="newDueDate" class="form-label">Nova Data de Devolução:</label>
         <input type="date" id="newDueDate" class="form-control" v-model="newDueDate">
       </div>
-      <button @click="handleExtension" class="btn btn-primary">Confirmar Renovação</button>
+      <button @click="promptForPasswordConfirmationRenovar" class="btn btn-primary">Confirmar Renovação</button>
 
     </div>
   </div>
-  
-  <PasswordModal v-model="showPasswordModal" @success="handleReturn" />
-  <PasswordModal v-model="showPasswordModal" @success="handleExtension" />
+
+  <PasswordModal v-model="showPasswordModalReturn" @success="handleReturn" />
+  <PasswordModal v-model="showPasswordModalRenovar" @success="handleExtension" />
   <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
   <div v-if="!loan" class="alert alert-danger">Empréstimo não encontrado ou inválido.</div>
   
@@ -48,7 +48,8 @@ const loanStore = useLoanStore();
 const toast = useToast();
 
 const loanEvent = ref(null);
-const showPasswordModal = ref(false);
+const showPasswordModalReturn = ref(false);
+const showPasswordModalRenovar = ref(false);
 const successMessage = ref('');
 
 const loanId = parseInt(route.params.loanId);
@@ -63,7 +64,9 @@ onMounted(() => {
   }
 });
 
-const promptForPasswordConfirmation = () => showPasswordModal.value = true;
+const promptForPasswordConfirmationReturn = () => showPasswordModalReturn.value = true;
+const promptForPasswordConfirmationRenovar = () => showPasswordModalRenovar.value = true;
+
 
 const handleReturn = () => {
   loanStore.registerReturn(loanId);

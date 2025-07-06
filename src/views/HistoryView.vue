@@ -50,7 +50,6 @@ const formatDateTime = (date) => {
   });
 };
 
-// NOVA FUNÇÃO: Retorna a classe CSS correta para cada tipo de evento.
 const getBadgeClass = (eventType) => {
   switch (eventType) {
     case 'Empréstimo':
