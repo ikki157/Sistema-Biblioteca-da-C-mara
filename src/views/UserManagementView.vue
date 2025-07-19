@@ -78,12 +78,12 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useRouter, RouterLink } from 'vue-router';
+import { useRouter, useRoute, RouterLink } from 'vue-router';
 import { useUserStore } from '@/store/userStore'; 
 import { useLoanStore } from '@/store/loanStore';
 import PasswordModal from '@/components/PasswordModal.vue'; 
 
-
+const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const loanStore = useLoanStore();
@@ -104,6 +104,10 @@ const filteredUsers = computed(() => {
     String(user.dateNasc).toLowerCase().includes(q)
   );
 });
+
+const userIdFromRoute = route.params.id;
+
+const selectedUser = userStore.findUserById(userIdFromRoute);
 
 const userHasActiveLoan = (user) => {
   return getActiveLoansForUser(user).length > 0;
@@ -130,9 +134,9 @@ const handleActualDeletion = () => {
   }
 };
 
-const goToLoanPage = (bookId) => {
-  console.log('Função goToLoanPage chamada com o ID do livro:', bookId);
-  router.push({ name: 'register-loan', params: { id: bookId } });
+const goToLoanPage = (userId) => {
+  console.log('Função goToLoanPage chamada com o ID do usuário:', userId);
+  router.push({ name: 'register-loan', params: { id: userId } });
 };
 
 const goToReturnPage = (loanId) => {

@@ -39,6 +39,10 @@ export const useUserStore = defineStore('user', {
       if (user) {
         Object.assign(user, updatedData);
       }
-    }
+    },
+
+    findUserById(userId) {
+      return this.users.find(user => user.id === parseInt(userId));
+    },
   },
 });
