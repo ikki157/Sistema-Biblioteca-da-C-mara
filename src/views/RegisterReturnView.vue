@@ -75,7 +75,7 @@ const handleReturn = () => {
 };
 
 const handleExtension = () => {
-  if (loanStore.extendable(loanId, newDueDate.value)) {
+  if (loanStore.extendDueDate(loanId, newDueDate.value)) {
     toast.success(`Prazo de devolução estendido até ${new Date(newDueDate.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}.`);
     router.push('/pesquisar-livro');
   } else {

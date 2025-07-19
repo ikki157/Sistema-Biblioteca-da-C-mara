@@ -15,7 +15,7 @@
               <RouterLink to="/pesquisar-livro" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-search"></i>Pesquisar</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink to="/usuario" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-person-plus"></i>Usuário</RouterLink>
+              <RouterLink to="/gerenciar-usuario" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-person-plus"></i>Usuário</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink to="/registrar-livro" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-plus-circle"></i>Registrar Livro</RouterLink>

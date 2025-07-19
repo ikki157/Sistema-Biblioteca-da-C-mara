@@ -72,18 +72,14 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
-// Mudamos o nome para 'user' para ficar mais claro
 const user = ref(null); 
 const showPasswordModal = ref(false);
 const successMessage = ref('');
 
-// onMounted carrega os dados do usuário quando a página abre
 onMounted(() => {
-  // Converte o ID da URL para um número
   const userId = parseInt(route.params.id); 
   const foundUser = userStore.getUserById(userId);
   if (foundUser) {
-    // Cria uma CÓPIA dos dados para edição, para não alterar o original antes de salvar
     user.value = { ...foundUser }; 
   }
 });
@@ -92,14 +88,11 @@ const promptForPasswordConfirmation = () => {
   showPasswordModal.value = true;
 };
 
-// A SUA FUNÇÃO VITORIOSA!
 const handleActualUpdate = () => {
   if (user.value) {
-    // Chama a ação com os dois argumentos corretos
     userStore.editUser(user.value.id, user.value);
     
     successMessage.value = 'Usuário atualizado com sucesso!';
-    // Redireciona de volta para a lista de usuários após 2 segundos
     setTimeout(() => router.push('/usuario'), 2000); 
   }
 };

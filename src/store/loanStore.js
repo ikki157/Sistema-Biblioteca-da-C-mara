@@ -89,11 +89,11 @@ export const useLoanStore = defineStore('loan', {
           book: loanEvent.book,
           user: loanEvent.user,
           date: new Date().toISOString(),
-          newDueDate: newDueDate,
-        };
+          newDueDate: newDueDate,        };
         this.history.push(extensionEvent);
         return true;
-      }
+      } 
+      
       return false;
     },
 

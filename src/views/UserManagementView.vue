@@ -38,17 +38,33 @@
               <td>{{ user.address }}</td>
               <td>{{ user.phone }}</td>
               <td>{{ user.email }}</td>
-              <td class="text-center">
+              <td class="text-center align-middle">
                 <button class="btn btn-sm btn-outline-primary me-2" title="Editar Usuário" @click="$router.push({ name: 'edit-user', params: { id: user.id } })">
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button 
-                  @click="promptForDelete(user.id)" 
-                  class="btn btn-sm btn-outline-danger"
-                  :title="hasActiveLoan(user) ? 'Usuário com empréstimos ativos não pode ser excluído' : 'Excluir Usuário'"
-                  :disabled="hasActiveLoan(user)">
+
+                <button  @click="promptForDelete(user.id)" class="btn btn-sm btn-outline-danger me-2" :title="userHasActiveLoan(user) ? 'Usuário com empréstimos ativos não pode ser excluído' : 'Excluir Usuário'" :disabled="userHasActiveLoan(user)">
                   <i class="bi bi-trash"></i>
                 </button>
+
+                <button @click="goToLoanPage(user.id)" class="btn btn-success btn-sm">
+                  <i class="bi bi-book me-1"></i> Emprestar
+                </button>
+
+                <div v-if="userHasActiveLoan(user)" class="mt-2 border-top pt-2">
+                  <small class="d-block mb-1 fw-bold">Devolver/Retornar:</small>
+
+                  <div
+                    v-for="loan in getActiveLoansForUser(user)"
+                    :key="loan.loanId"
+                    class="d-flex justify-content-around align-items-center bg-light p-2 rounded mb-1"
+                  >
+                    <span>Com: {{ loan.book.title }}</span>
+                    <button @click="goToReturnPage(loan.loanId)" class="btn btn-outline-secondary btn-sm">
+                      <i class="bi bi-arrow-return-left"></i>
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -62,11 +78,13 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 import { useUserStore } from '@/store/userStore'; 
 import { useLoanStore } from '@/store/loanStore';
 import PasswordModal from '@/components/PasswordModal.vue'; 
 
+
+const router = useRouter();
 const userStore = useUserStore();
 const loanStore = useLoanStore();
 
@@ -87,22 +105,13 @@ const filteredUsers = computed(() => {
   );
 });
 
-// A função de verificação agora recebe o objeto 'user' inteiro
-const hasActiveLoan = (user) => {
-  if (!user) return false;
-  const activeLoans = new Set();
-  loanStore.history.forEach(event => {
-    if (event.readerName === user.name) {
-      if (event.type === 'Empréstimo') activeLoans.add(event.loanId);
-      else if (event.type === 'Devolução') activeLoans.delete(event.loanId);
-    }
-  });
-  return activeLoans.size > 0;
+const userHasActiveLoan = (user) => {
+  return getActiveLoansForUser(user).length > 0;
 };
 
 const promptForDelete = (userId) => {
   const user = userStore.getUserById(userId);
-  if (hasActiveLoan(user)) {
+  if (userHasActiveLoan(user)) {
     alert('Ação não permitida: Este usuário possui empréstimos ativos e não pode ser excluído.');
     return;
   }
@@ -114,14 +123,35 @@ const handleActualDeletion = () => {
   if (userToDeleteId.value) {
     const user = userStore.getUserById(userToDeleteId.value);
     if (user) {
-      // 1. Primeiro, registra a exclusão no histórico
       loanStore.logUserDeletion(user);
-      // 2. Depois, remove o usuário do acervo
       userStore.deleteUser(userToDeleteId.value);
     }
     userToDeleteId.value = null;
   }
 };
+
+const goToLoanPage = (bookId) => {
+  console.log('Função goToLoanPage chamada com o ID do livro:', bookId);
+  router.push({ name: 'register-loan', params: { id: bookId } });
+};
+
+const goToReturnPage = (loanId) => {
+  if (loanId) {
+    router.push({ name: 'register-return', params: { loanId: loanId } });
+  } else {
+    console.error("Tentativa de devolução com um loanId inválido!");
+  }
+};
+
+const getActiveLoansForUser = (user) => {
+  if (!user) return [];
+  const returnedLoanIds = new Set(loanStore.history
+    .filter(event => event.type === 'Devolução')
+    .map(event => event.loanId));
+
+  return loanStore.history.filter(event => event.type === 'Empréstimo' && event.user.id === userId && !returnedLoanIds.has(event.loanId));
+};
+
 </script>
 
 <style scoped>

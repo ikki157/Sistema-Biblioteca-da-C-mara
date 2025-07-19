@@ -24,7 +24,7 @@ const router = createRouter({
     { path: '/registrar-emprestimo/:id', name: 'register-loan', component: () => import('../views/RegisterLoanView.vue'), meta: { requiresAuth: true } },
     { path: '/registrar-devolucao/:loanId', name: 'register-return', component: () => import('../views/RegisterReturnView.vue'), meta: { requiresAuth: true } },
     { path: '/historico', name: 'history', component: HistoryView, meta: { requiresAuth: true } },
-    { path: '/usuario', name: 'user-management', component: UserManagementView, meta: { requiresAuth: true } },
+    { path: '/gerenciar-usuario', name: 'user-management', component: UserManagementView, meta: { requiresAuth: true } },
     { path: '/editar-usuario/:id', name: 'edit-user', component: EditUserView, meta: { requiresAuth: true } }
   ]
 })

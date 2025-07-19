@@ -65,7 +65,7 @@ import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/store/userStore';
 import PasswordModal from '@/components/PasswordModal.vue';
 
-const userStore = useUserStore(); // Inicializa o store
+const userStore = useUserStore(); 
 
 const user = ref({
   name: '',
@@ -86,7 +86,7 @@ const promptForPasswordConfirmation = () => {
 const handleActualRegistration = () => {
 
   userStore.registerUser(user.value);
-
+  
   successMessage.value = `Sucesso! Usuário "${user.value.name}" foi registrado.`;
 
   

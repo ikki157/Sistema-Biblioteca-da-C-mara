@@ -35,9 +35,6 @@
                   <button @click="promptForDelete(book.id)" class="btn btn-danger btn-sm me-2" :disabled="book.loanedOut > 0">
                     Excluir
                   </button>
-                  <button @click="goToLoanPage(book.id)" class="btn btn-primary btn-sm me-2" :disabled="book.available === 0">
-                    Emprestar
-                  </button>
 
                 <div v-if="getActiveLoansForBook(book.id).length > 0" class="mt-2 border-top pt-2">
                   <small class="d-block mb-1 fw-bold">Empréstimos Ativos:</small>
@@ -47,13 +44,8 @@
                     :key="loan.loanId" 
                     class="d-flex justify-content-around align-items-center mb-1"
                   >
-                    <pre style="font-size: 10px; color: red">{{ loan }}</pre>
-
-                    <span>Com: {{ loan.user.name }}</span>
-                    <button @click="goToReturnPage(loan.loanId)" class="btn btn-success btn-sm">
-                      Devolver/Renovar
-                    </button>
-                    
+                    <span>Com: {{ loan.user.name }}</span><br />
+                    <small class="text-muted">Até: {{ loan.dueDate }}</small>
                   </div>
                 </div>
               </td>
