@@ -153,7 +153,7 @@ const getActiveLoansForUser = (user) => {
     .filter(event => event.type === 'Devolução')
     .map(event => event.loanId));
 
-  return loanStore.history.filter(event => event.type === 'Empréstimo' && event.user.id === userId && !returnedLoanIds.has(event.loanId));
+  return loanStore.history.filter(event => event.type === 'Empréstimo' && event.user.id === user.id && !returnedLoanIds.has(event.loanId));
 };
 
 </script>

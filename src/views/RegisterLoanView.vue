@@ -12,12 +12,11 @@
           <p class="card-text text-muted">{{ selectedUser.email }} | Nº de Identificação: {{ selectedUser.numIdent }}</p>
         </div>
       </div>
-    </div>
+    
 
         <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
         <form @submit.prevent="promptForPasswordConfirmation" v-if="!successMessage">
-          <div class="mb-3">
 
             <div class="mb-3">
               <label for="bookSearch" class="form-label">Pesquisar Livro</label>
@@ -41,15 +40,15 @@
             </div>
 
 
-            <div>
+            <div class="mb-3">
               <label for="dueDate" class="form-label">Data de Devolução:</label>
               <input type="date" v-model="dueDate" class="form-control" id="dueDate" required />
             </div>
 
-          </div>
           <button type="submit" class="btn btn-primary">Confirmar Empréstimo</button>
         </form>
       </div>
+    </div>
 
   <PasswordModal v-model="showPasswordModal" @success="handleLoan" />
 </template>
@@ -117,36 +116,32 @@ function selectBook(book) {
   bookSearchQuery.value = book.title; 
 }
 onMounted(() => {
-  const userId = parseInt(route.params.userId);
+  const userId = parseInt(route.params.id);
   if (userId) {
     selectedUser.value = userStore.getUserById(userId);
-  } else {
-    alert('Usuário não encontrado.');
+  }
+
+  if (!selectedUser.value) {
+    toast.error('Usuário não encontrado.');
     router.push({ name: 'user-management' });
   }
+
+  const defaultDueDate = new Date();
+  defaultDueDate.setDate(defaultDueDate.getDate() + 14); 
+  dueDate.value = defaultDueDate.toISOString().split('T')[0];
 });
 
 const handleLoan = () => {
 
-  if (!selectedUser.value || !selectedBook.value) {
-    alert('Por favor, selecione um leitor e um livro.');
-    return;
-  }
-
-  const bookToLoan = bookStore.getBookById(bookId);
-  const userToLoan = userStore.getUserById(selectUserId.value);
-
-  if (bookToLoan && userToLoan) {
-    loanStore.registerLoan(bookToLoan, userToLoan, dueDate.value);
-    toast.success(`Empréstimo registrado! Devolver até ${new Date(dueDate.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}.`);
-    router.push('/pesquisar-livro');
+ if (selectedUser.value && selectedBook.value) {
+    loanStore.registerLoan(selectedBook.value, selectedUser.value, dueDate.value);
+    toast.success(`Empréstimo para "${selectedUser.value.name}" registrado com sucesso!`);
+    router.push({ name: 'user-management' });
   } else {
     toast.error('Erro ao registrar empréstimo. Verifique os dados do livro ou do Usuário.');
   }
-  
-  console.log(`Emprestando o livro "${selectedBook.value.title}" para "${selectedUser.value.name}"`);
-
 };
+
 </script>
 
 <style scoped>
