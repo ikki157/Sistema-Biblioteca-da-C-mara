@@ -127,7 +127,7 @@ onMounted(() => {
   }
 
   const defaultDueDate = new Date();
-  defaultDueDate.setDate(defaultDueDate.getDate() + 14); 
+  defaultDueDate.setDate(defaultDueDate.getDate() + 7); 
   dueDate.value = defaultDueDate.toISOString().split('T')[0];
 });
 

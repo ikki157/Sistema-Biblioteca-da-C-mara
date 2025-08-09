@@ -86,19 +86,6 @@ const filteredBooks = computed(() => {
   );
 });
 
-const goToLoanPage = (bookId) => {
-  console.log('Função goToLoanPage chamada com o ID do livro:', bookId);
-  router.push({ name: 'register-loan', params: { id: bookId } });
-};
-
-const goToReturnPage = (loanId) => {
-  if (loanId) {
-    router.push({ name: 'register-return', params: { loanId: loanId } });
-  } else {
-    console.error("Tentativa de devolução com um loanId inválido!");
-  }
-};
-
 const promptForDelete = (bookId) => {
   const book = bookStore.getBookById(bookId);
 

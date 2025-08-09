@@ -75,6 +75,23 @@ const handleReturn = () => {
 };
 
 const handleExtension = () => {
+
+  const newDate = new Date(newDueDate.value);
+  const currentDueDate = new Date(loan.value.dueDate);
+
+  if (newDate <= currentDueDate) {
+    toast.error('A nova data de devolução deve ser posterior à data atual.');
+    return;
+  }
+
+  const renewalCount = loanStore.history.filter(event => event.loanId === loanId && event.type === 'Renovação').length;
+  const renewalLimit = 2;
+
+    if (renewalCount >= renewalLimit) {
+    toast.error(`Limite de renovações ( ${renewalLimit} ) para este empréstimo foi atingido.`);
+    return;
+  }
+
   if (loanStore.extendDueDate(loanId, newDueDate.value)) {
     toast.success(`Prazo de devolução estendido até ${new Date(newDueDate.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}.`);
     router.push('/pesquisar-livro');

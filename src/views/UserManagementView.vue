@@ -20,10 +20,6 @@
             <tr>
               <th>Nome</th>
               <th>Nº de Identificação</th>
-              <th>Data de Nascimento</th>
-              <th>Endereço</th>
-              <th>Telefone</th>
-              <th>Email</th>
               <th class="text-center">Ações</th>
             </tr>
           </thead>
@@ -34,10 +30,6 @@
             <tr v-for="user in filteredUsers" :key="user.id">
               <td>{{ user.name }}</td>
               <td>{{ user.numIdent }}</td>
-              <td>{{ user.dateNasc }}</td>
-              <td>{{ user.address }}</td>
-              <td>{{ user.phone }}</td>
-              <td>{{ user.email }}</td>
               <td class="text-center align-middle">
                 <button class="btn btn-sm btn-outline-primary me-2" title="Editar Usuário" @click="$router.push({ name: 'edit-user', params: { id: user.id } })">
                   <i class="bi bi-pencil"></i>

@@ -10,19 +10,35 @@ export const useBookStore = defineStore('books', {
   getters: {
     totalBookCopies: (state) => state.books.reduce((total, book) => total + book.quantity, 0),
     getBookById: (state) => (bookId) => state.books.find(book => book.id === bookId),
+    bookCodes: (state) => new Set(state.books.map(book => book.code)),
+    systemIds: (state) => new Set(state.books.map(book => book.systemId)),
   },
 
   actions: {
     registerBook(bookData) {
       const newBook = {
         id: this.nextBookId++,
-        code: bookData.code,
         title: bookData.title,
+        subtitle: bookData.subtitle,
         author: bookData.author,
         genre: bookData.genre,
+        publisher: bookData.publisher,
+        publicationPlace: bookData.publicationPlace,
+        publicationYear: bookData.publicationYear,
+        cdd: bookData.cdd,
+        cutter: bookData.cutter,
+        edition: bookData.edition,
+        topicSubject: bookData.topicSubject,
+        language: bookData.language,
+        acquisitionType: bookData.acquisitionType,
+        collectionSeries: bookData.collectionSeries,
+        materialType: bookData.materialType,
+        code: bookData.code,
+        systemId: bookData.systemId,
         quantity: bookData.quantity,
         available: bookData.quantity,
         loanedOut: 0,
+        bookImage: bookData.bookImage,
       };
       this.books.push(newBook);
     },
