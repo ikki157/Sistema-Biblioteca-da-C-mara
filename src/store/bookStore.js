@@ -84,5 +84,15 @@ export const useBookStore = defineStore('books', {
         book.loanedOut--;
       }
     },
+
+    editBook(bookId, updatedData) {
+      const book = this.getBookById(bookId);
+      if (book) {
+        const quantityDifference = updatedData.quantity - book.quantity;
+        book.available += quantityDifference;
+
+        Object.assign(book, updatedData);
+      }
+    },
   },
 });

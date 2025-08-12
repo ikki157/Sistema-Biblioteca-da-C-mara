@@ -39,7 +39,11 @@
                   <i class="bi bi-trash"></i>
                 </button>
 
-                <button @click="goToLoanPage(user.id)" class="btn btn-success btn-sm">
+                 <button 
+                  @click="goToLoanPage(user.id)" 
+                  class="btn btn-success btn-sm"
+                  :disabled="getActiveLoansForUser(user).length >= 3"
+                  :title="getActiveLoansForUser(user).length >= 3 ? 'Usuário atingiu o limite de 3 empréstimos' : 'Registrar novo empréstimo'">
                   <i class="bi bi-book me-1"></i> Emprestar
                 </button>
 

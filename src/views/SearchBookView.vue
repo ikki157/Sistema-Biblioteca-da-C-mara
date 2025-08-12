@@ -13,25 +13,29 @@
         <table class="table table-striped table-hover">
           <thead class="table-light">
             <tr>
-              <th>Código</th>
+              <th class="img-book">Foto</th>
               <th>Título</th>
-              <th>Autor</th>
-              <th>Gênero</th>
-              <th>Disponíveis</th>
+              <th class="text-center">Disponíveis</th>
               <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="!filteredBooks.length">
-              <td colspan="6" class="text-center text-muted py-4">Nenhum livro encontrado.</td>
+              <td colspan="4" class="text-center text-muted py-4">Nenhum livro encontrado.</td>
             </tr>
             <tr v-for="book in filteredBooks" :key="book.id">
-              <td>{{ book.code }}</td>
+              <td>
+                <img :src="book.bookImage" v-if="book.bookImage" alt="Capa do livro" class="img-fluid rounded img-book">
+                <div v-else class="text-muted text-center">
+                  <i class="bi bi-image-alt fs-4"></i>
+                </div>
+              </td>
               <td>{{ book.title }}</td>
-              <td>{{ book.author }}</td>
-              <td>{{ book.genre }}</td>
-              <td>{{ book.available }} / {{ book.quantity }}</td>
+              <td class="text-center">{{ book.available }} / {{ book.quantity }}</td>
               <td class="text-center align-middle">
+                  <button @click="$router.push({ name: 'edit-book', params: { id: book.id } })" class="btn btn-primary btn-sm me-2">
+                    Editar
+                  </button>
                   <button @click="promptForDelete(book.id)" class="btn btn-danger btn-sm me-2" :disabled="book.loanedOut > 0">
                     Excluir
                   </button>
@@ -78,12 +82,16 @@ const filteredBooks = computed(() => {
   if (!searchQuery.value) return bookStore.books;
   
   const lowerCaseQuery = searchQuery.value.toLowerCase();
-  return bookStore.books.filter(book => 
-    book.title.toLowerCase().includes(lowerCaseQuery) ||
-    book.author.toLowerCase().includes(lowerCaseQuery) ||
-    book.code.toLowerCase().includes(lowerCaseQuery) ||
-    book.genre.toLowerCase().includes(lowerCaseQuery)
-  );
+  return bookStore.books.filter(book => {
+
+  return Object.keys(book).some(key => {
+      const value = book[key];
+      if (value !== null && value !== undefined) {
+        return String(value).toLowerCase().includes(lowerCaseQuery);
+      }
+      return false;
+    });
+  });
 });
 
 const promptForDelete = (bookId) => {
@@ -118,7 +126,7 @@ const getActiveLoansForBook = (bookId) => {
 </script>
 
 <style scoped>
-  .table {
-    vertical-align: middle;
-  }
+  .table { vertical-align: middle; }
+
+  .img-book { width: 100px; height: auto; object-fit: cover; }
 </style>
