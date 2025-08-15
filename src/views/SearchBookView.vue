@@ -68,7 +68,7 @@ import { ref, computed } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore';
 import { useLoanStore } from '@/store/loanStore';
-import PasswordModal from '@/components/PasswordModal.vue'; // Importa o componente do modal
+import PasswordModal from '@/components/PasswordModal.vue'; 
 
 const bookStore = useBookStore();
 const loanStore = useLoanStore();
