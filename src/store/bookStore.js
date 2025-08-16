@@ -47,14 +47,11 @@ export const useBookStore = defineStore('books', {
       loanStore.logBookCreation(newBook);
     },
 
-    async deleteBook(bookId) {
+    deleteBook(bookId) {
 
-      const { useLoanStore } = await import('./loanStore');
-      const loanStore = useLoanStore();
       const bookIndex = this.books.findIndex(book => book.id === bookId);
       if (bookIndex !== -1) {
         const bookToDelete = this.books[bookIndex];
-        loanStore.logBookDeletion(bookToDelete);
         this.books.splice(bookIndex, 1);
       }
     },

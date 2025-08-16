@@ -24,12 +24,23 @@ export const useLoanStore = defineStore('loan', {
 
   actions: {
     
+     logBookDeletion(book) {
+      const deletionEvent = {
+        id: this.nextLoanId++,
+        type: 'Exclusão de Livro',
+        book: { title: book.title, code: book.code },
+        user: { name: 'N/A' },
+        date: new Date().toISOString(),
+      };
+      this.history.unshift(deletionEvent);
+    },
+
     logBookCreation(book) {
       this.history.unshift({
         id: this.nextLoanId++,
         type: 'Cadastro de Livro',
         book: { title: book.title, code: book.code || 'N/A' },
-        user: { name: 'N/A' }, // Não há usuário associado
+        user: { name: 'N/A' }, 
         date: new Date().toISOString(),
       });
     },

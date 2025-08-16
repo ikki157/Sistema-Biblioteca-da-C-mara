@@ -107,11 +107,15 @@ const promptForDelete = (bookId) => {
 };
 
 const handleActualDeletion = () => {
-  console.log('3. Sinal "success" recebido! A página vai executar a exclusão.');
-  
   if (bookToDeleteId.value) {
-    bookStore.deleteBook(bookToDeleteId.value);
-    bookToDeleteId.value = null;
+   const book = bookStore.getBookById(bookToDeleteId.value);
+
+   if (book) {
+    loanStore.logBookDeletion(book);
+   }
+
+   bookStore.deleteBook(bookToDeleteId.value);
+   bookToDeleteId.value = null;
   }
 };
 
