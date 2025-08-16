@@ -41,6 +41,7 @@ export const useBookStore = defineStore('books', {
         bookImage: bookData.bookImage,
       };
       this.books.push(newBook);
+      loanStore.logBookCreation(newBook);
     },
 
     deleteBook(bookId) {
@@ -92,6 +93,7 @@ export const useBookStore = defineStore('books', {
         book.available += quantityDifference;
 
         Object.assign(book, updatedData);
+        loanStore.logBookUpdate(book);
       }
     },
   },

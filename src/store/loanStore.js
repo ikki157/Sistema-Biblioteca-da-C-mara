@@ -25,6 +25,47 @@ export const useLoanStore = defineStore('loan', {
 
   actions: {
     
+    logBookCreation(book) {
+      this.history.unshift({
+        id: this.nextLoanId++,
+        type: 'Cadastro de Livro',
+        book: { title: book.title, code: book.code || 'N/A' },
+        user: { name: 'N/A' }, // Não há usuário associado
+        date: new Date().toISOString(),
+      });
+    },
+
+    logBookUpdate(book) {
+      this.history.unshift({
+        id: this.nextLoanId++,
+        type: 'Edição de Livro',
+        book: { title: book.title, code: book.code || 'N/A' },
+        user: { name: 'N/A' },
+        date: new Date().toISOString(),
+      });
+    },
+    
+    logUserCreation(user) {
+        this.history.unshift({
+        id: this.nextLoanId++,
+        type: 'Cadastro de Usuário',
+        book: { title: `Usuário: ${user.name}` },
+        user: { name: user.name },
+        date: new Date().toISOString(),
+      });
+    },
+    
+    logUserUpdate(user) {
+        this.history.unshift({
+        id: this.nextLoanId++,
+        type: 'Edição de Usuário',
+        book: { title: `Usuário: ${user.name}` },
+        user: { name: user.name },
+        date: new Date().toISOString(),
+      });
+    },
+
+
     registerLoan(book, user, dueDate) {
       const bookStore = useBookStore();
             

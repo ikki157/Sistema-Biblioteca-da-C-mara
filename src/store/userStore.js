@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useLoanStore } from './loanStore';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -25,6 +26,7 @@ export const useUserStore = defineStore('user', {
         email: userData.email,
       };
       this.users.push(newUser);
+      loanStore.logUserCreation(newUser);
     },
 
     deleteUser(userId) {
@@ -38,6 +40,7 @@ export const useUserStore = defineStore('user', {
       const user = this.getUserById(userId);
       if (user) {
         Object.assign(user, updatedData);
+        loanStore.logUserUpdate(user);
       }
     },
 
