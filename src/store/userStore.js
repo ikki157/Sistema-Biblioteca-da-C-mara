@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useLoanStore } from './loanStore';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -15,7 +14,10 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
-    registerUser(userData) {
+    async registerUser(userData) {
+
+      const { useLoanStore } = await import('./loanStore');
+      const loanStore = useLoanStore();
       const newUser = {
         id: this.nextUserId++,
         name: userData.name,
@@ -36,7 +38,10 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    editUser(userId, updatedData) {
+    async editUser(userId, updatedData) {
+
+      const { useLoanStore } = await import('./loanStore');
+      const loanStore = useLoanStore();
       const user = this.getUserById(userId);
       if (user) {
         Object.assign(user, updatedData);

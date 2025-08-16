@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useBookStore } from './bookStore';
 
 export const useLoanStore = defineStore('loan', {
   state: () => ({
@@ -66,7 +65,8 @@ export const useLoanStore = defineStore('loan', {
     },
 
 
-    registerLoan(book, user, dueDate) {
+    async registerLoan(book, user, dueDate) {
+      const { useBookStore } = await import('./bookStore');
       const bookStore = useBookStore();
             
       if (book.available > 0) { 
@@ -89,8 +89,10 @@ export const useLoanStore = defineStore('loan', {
       }
     },
 
-    
-    registerReturn(loanId) {
+
+    async registerReturn(loanId) {
+
+      const { useBookStore } = await import('./bookStore');
       const bookStore = useBookStore();
       const loanEvent = this.history.find(e => e.loanId === loanId && e.type === 'Empréstimo');
       

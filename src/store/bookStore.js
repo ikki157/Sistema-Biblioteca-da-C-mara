@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useLoanStore } from './loanStore';
 
 export const useBookStore = defineStore('books', {
   state: () => ({
@@ -15,7 +14,11 @@ export const useBookStore = defineStore('books', {
   },
 
   actions: {
-    registerBook(bookData) {
+    async registerBook(bookData) {
+
+      const { useLoanStore } = await import('./loanStore');
+      const loanStore = useLoanStore();
+
       const newBook = {
         id: this.nextBookId++,
         title: bookData.title,
@@ -44,7 +47,9 @@ export const useBookStore = defineStore('books', {
       loanStore.logBookCreation(newBook);
     },
 
-    deleteBook(bookId) {
+    async deleteBook(bookId) {
+
+      const { useLoanStore } = await import('./loanStore');
       const loanStore = useLoanStore();
       const bookIndex = this.books.findIndex(book => book.id === bookId);
       if (bookIndex !== -1) {
@@ -86,7 +91,9 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    editBook(bookId, updatedData) {
+    async editBook(bookId, updatedData) {
+
+      const { useLoanStore } = await import('./loanStore');
       const book = this.getBookById(bookId);
       if (book) {
         const quantityDifference = updatedData.quantity - book.quantity;
