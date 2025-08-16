@@ -24,7 +24,7 @@
               <RouterLink to="/historico" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-clock-history"></i>Histórico</RouterLink>
             </li>
           </ul>
-          <button @click="auth.logout()" class="btn btn-outline-danger">
+          <button @click="handleLogout" class="btn btn-outline-danger">
             <i class="bi bi-box-arrow-right me-1"></i> Sair
           </button>
         </div>
@@ -34,15 +34,22 @@
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/auth';
+
 const auth = useAuthStore();
+const router = useRouter();
+
+const handleLogout = () => {
+  auth.logout();
+  router.push({ name: 'login' });
+};
 </script>
 
 <style scoped>
 .nav-link.router-link-active,
 .nav-link.router-link-exact-active {
-  color: #0d6efd !important; /* Cor primária do Bootstrap */
+  color: #0d6efd !important;
   font-weight: 500;
 }
 </style>
