@@ -4,12 +4,11 @@
       <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
           <h2 class="h4 mb-0">Editar Usuário</h2>
-          <RouterLink to="/usuario" class="btn btn-outline-secondary">
+          <RouterLink to="/gerenciar-usuario" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i> Voltar
           </RouterLink>
         </div>
         <div class="card-body p-4">
-          <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
           <form v-if="user && !successMessage" @submit.prevent="promptForPasswordConfirmation">
             <div class="mb-3">
@@ -66,11 +65,13 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { useUserStore } from '@/store/userStore';
+import { useToast } from 'vue-toastification';  
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const toast = useToast();
 
 const user = ref(null); 
 const showPasswordModal = ref(false);
@@ -91,9 +92,9 @@ const promptForPasswordConfirmation = () => {
 const handleActualUpdate = () => {
   if (user.value) {
     userStore.editUser(user.value.id, user.value);
-    
-    successMessage.value = 'Usuário atualizado com sucesso!';
-    setTimeout(() => router.push('/usuario'), 2000); 
+
+    toast.success('Usuário atualizado com sucesso!');
+    setTimeout(() => router.push('/gerenciar-usuario'), 2000);
   }
 };
 </script>

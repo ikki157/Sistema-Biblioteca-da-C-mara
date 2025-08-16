@@ -31,7 +31,7 @@
               <i class="bi bi-collection fs-1 opacity-50"></i>
             </div>
           </div>
-          <RouterLink to="/usuario" class="card-footer-link">
+          <RouterLink to="/gerenciar-usuario" class="card-footer-link">
             Ver Usuários <i class="bi bi-arrow-right-circle"></i>
           </RouterLink>
         </div>

@@ -4,7 +4,7 @@
       <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
           <h2 class="h4 mb-0">Registrar Novo Usuário</h2>
-          <RouterLink to="/usuario" class="btn btn-outline-secondary">
+          <RouterLink to="/gerenciar-usuario" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i> Voltar
           </RouterLink>
         </div>
