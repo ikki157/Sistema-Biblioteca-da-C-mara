@@ -9,8 +9,7 @@
           </RouterLink>
         </div>
         <div class="card-body p-4">
-          <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
-
+          
           <form @submit.prevent="promptForPasswordConfirmation">
             <div class="mb-3">
               <label for="userName" class="form-label">Nome do Usuário</label>
@@ -63,9 +62,11 @@
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/store/userStore';
+import { useToast } from 'vue-toastification';
 import PasswordModal from '@/components/PasswordModal.vue';
 
-const userStore = useUserStore(); 
+const userStore = useUserStore();
+const toast = useToast();
 
 const user = ref({
   name: '',
@@ -86,8 +87,8 @@ const promptForPasswordConfirmation = () => {
 const handleActualRegistration = () => {
 
   userStore.registerUser(user.value);
-  
-  successMessage.value = `Sucesso! Usuário "${user.value.name}" foi registrado.`;
+
+  toast.success(`Sucesso! Usuário "${user.value.name}" foi registrado.`);
 
   
   user.value = { name: '', numIdent: '', dateNasc: '', address: '', phone: '', email: '' };

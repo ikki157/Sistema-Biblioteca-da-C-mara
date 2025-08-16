@@ -95,4 +95,6 @@ export const useBookStore = defineStore('books', {
       }
     },
   },
+
+  persist: true,
 });

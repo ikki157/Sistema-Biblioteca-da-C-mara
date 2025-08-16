@@ -45,4 +45,6 @@ export const useUserStore = defineStore('user', {
       return this.users.find(user => user.id === parseInt(userId));
     },
   },
+
+  persist: true,
 });

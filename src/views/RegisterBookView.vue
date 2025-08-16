@@ -9,7 +9,6 @@
           </RouterLink>
         </div>
         <div class="card-body p-4">
-          <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
 
           <form @submit.prevent="promptForPasswordConfirmation">
             <div class="mb-3">
@@ -149,9 +148,11 @@
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useBookStore } from '@/store/bookStore'; 
+import { useToast } from 'vue-toastification';
 import PasswordModal from '@/components/PasswordModal.vue';
 
 const bookStore = useBookStore(); 
+const toast = useToast();
 
 const book = ref({
 title: '',
@@ -215,10 +216,10 @@ const generateRandomSystemId = () => {
 
 const handleActualRegistration = () => {
   bookStore.registerBook(book.value);
-  
-  successMessage.value = `Sucesso! ${book.value.quantity} cópia(s) de "${book.value.title}" foram registradas.`;
-  
-  book.value = { 
+
+  toast.success(`Sucesso! ${book.value.quantity} cópia(s) de "${book.value.title}" foram registradas.`);
+
+  book.value = {
     title: '',
     subtitle: '',
     author: '',
