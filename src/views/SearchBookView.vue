@@ -108,17 +108,18 @@ const promptForDelete = (bookId) => {
 
 const handleActualDeletion = () => {
   if (bookToDeleteId.value) {
-   const book = bookStore.getBookById(bookToDeleteId.value);
-
-   if (book) {
-    loanStore.logBookDeletion(book);
-   }
-
-   bookStore.deleteBook(bookToDeleteId.value);
-   bookToDeleteId.value = null;
+    const bookToDelete = bookStore.getBookById(bookToDeleteId.value);
+    
+    if (bookToDelete) {
+     
+      loanStore.logBookDeletion(bookToDelete);
+    }
+    
+    bookStore.deleteBook(bookToDeleteId.value);
+    
+    bookToDeleteId.value = null;
   }
 };
-
 const getActiveLoansForBook = (bookId) => {
   const returnedLoanIds = new Set(loanStore.history
     .filter(event => event.type === 'Devolução')

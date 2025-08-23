@@ -24,55 +24,25 @@ export const useLoanStore = defineStore('loan', {
 
   actions: {
     
-     logBookDeletion(book) {
-      const deletionEvent = {
-        id: this.nextLoanId++,
-        type: 'Exclusão de Livro',
-        book: { title: book.title, code: book.code },
-        user: { name: 'N/A' },
-        date: new Date().toISOString(),
-      };
-      this.history.unshift(deletionEvent);
-    },
-
+    
+     // FUNÇÕES DE LOG
     logBookCreation(book) {
-      this.history.unshift({
-        id: this.nextLoanId++,
-        type: 'Cadastro de Livro',
-        book: { title: book.title, code: book.code || 'N/A' },
-        user: { name: 'N/A' }, 
-        date: new Date().toISOString(),
-      });
+      this.history.unshift({ id: this.nextEventId++, type: 'Cadastro de Livro', book: { title: book.title, code: book.code }, user: { name: 'N/A' }, date: new Date().toISOString() });
     },
-
     logBookUpdate(book) {
-      this.history.unshift({
-        id: this.nextLoanId++,
-        type: 'Edição de Livro',
-        book: { title: book.title, code: book.code || 'N/A' },
-        user: { name: 'N/A' },
-        date: new Date().toISOString(),
-      });
+      this.history.unshift({ id: this.nextEventId++, type: 'Edição de Livro', book: { title: book.title, code: book.code }, user: { name: 'N/A' }, date: new Date().toISOString() });
     },
-    
+    logBookDeletion(book) {
+      this.history.unshift({ id: this.nextEventId++, type: 'Exclusão de Livro', book: { title: book.title, code: book.code }, user: { name: 'N/A' }, date: new Date().toISOString() });
+    },
     logUserCreation(user) {
-        this.history.unshift({
-        id: this.nextLoanId++,
-        type: 'Cadastro de Usuário',
-        book: { title: `Usuário: ${user.name}` },
-        user: { name: user.name },
-        date: new Date().toISOString(),
-      });
+      this.history.unshift({ id: this.nextEventId++, type: 'Cadastro de Usuário', book: { title: `Usuário: ${user.name}` }, user: { name: user.name }, date: new Date().toISOString() });
     },
-    
     logUserUpdate(user) {
-        this.history.unshift({
-        id: this.nextLoanId++,
-        type: 'Edição de Usuário',
-        book: { title: `Usuário: ${user.name}` },
-        user: { name: user.name },
-        date: new Date().toISOString(),
-      });
+      this.history.unshift({ id: this.nextEventId++, type: 'Edição de Usuário', book: { title: `Usuário: ${user.name}` }, user: { name: user.name }, date: new Date().toISOString() });
+    },
+    logUserDeletion(user) {
+      this.history.unshift({ id: this.nextEventId++, type: 'Exclusão de Usuário', book: { title: `Usuário Excluído: ${user.name}` }, user: { name: 'N/A' }, date: new Date().toISOString() });
     },
 
 
@@ -101,57 +71,25 @@ export const useLoanStore = defineStore('loan', {
     },
 
 
-    async registerReturn(loanId) {
-
-      const { useBookStore } = await import('./bookStore');
-      const bookStore = useBookStore();
+    // FUNÇÕES DE EMPRÉSTIMO
+    registerLoan(book, user, dueDate) {
+      const loanEvent = { loanId: this.nextEventId, type: 'Empréstimo', book: { id: book.id, title: book.title }, user: { id: user.id, name: user.name }, date: new Date().toISOString(), dueDate: dueDate };
+      this.history.unshift(loanEvent);
+      this.nextEventId++;
+    },
+    registerReturn(loanId, bookId) {
       const loanEvent = this.history.find(e => e.loanId === loanId && e.type === 'Empréstimo');
-      
       if (loanEvent) {
-        const returnEvent = {
-          type: 'Devolução',
-          loanId: loanId,
-          book: loanEvent.book,
-          user: loanEvent.user,
-          date: new Date().toISOString(),
-        };
-        this.history.push(returnEvent);
-        bookStore.increaseAvailability(loanEvent.book.id);
+        this.history.unshift({ id: this.nextEventId++, type: 'Devolução', loanId: loanId, book: loanEvent.book, user: loanEvent.user, date: new Date().toISOString() });
       }
     },
-    
-    logUserDeletion(user) {
-      const deletionEvent = {
-        id: this.nextLoanId++,
-        type: 'Exclusão de Usuário',
-        book: { title: `Usuário: ${user.name}` }, 
-        readerName: `ID: ${user.id}`,
-        date: new Date(),
-      };
-      this.history.unshift(deletionEvent);
-    },
-
     extendDueDate(loanId, newDueDate) {
       const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
-      
       if (loanEvent) {
         loanEvent.dueDate = newDueDate;
-
-        const extensionEvent = {
-          type: 'Renovação',
-          loanId: loanId,
-          book: loanEvent.book,
-          user: loanEvent.user,
-          date: new Date().toISOString(),
-          newDueDate: newDueDate,        };
-        this.history.push(extensionEvent);
-        return true;
-      } 
-      
-      return false;
+        this.history.unshift({ id: this.nextEventId++, type: 'Renovação', loanId: loanId, book: loanEvent.book, user: loanEvent.user, date: new Date().toISOString(), newDueDate: newDueDate });
+      }
     },
-
   },
-
-  persist: true
+  persist: true,
 });
