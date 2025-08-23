@@ -52,7 +52,7 @@
 
                   <div
                     v-for="loan in getActiveLoansForUser(user)"
-                    :key="nextLoanId"
+                    :key="loan.loanid"
                     class="d-flex justify-content-around align-items-center bg-light p-2 rounded mb-1"
                   >
                     <span>Com: {{ loan.book.title }}</span>
@@ -122,6 +122,12 @@ const promptForDelete = (userId) => {
 const handleActualDeletion = () => {
   if (userToDeleteId.value) {
     const user = userStore.getUserById(userToDeleteId.value);
+
+    if (user && userHasActiveLoan(user)) {
+        alert('Ação não permitida: Este usuário possui empréstimos ativos e não pode ser excluído.');
+        return;
+    }
+
     if (user) {
       loanStore.logUserDeletion(user);
       userStore.deleteUser(userToDeleteId.value);

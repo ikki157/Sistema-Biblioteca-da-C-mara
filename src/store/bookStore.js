@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 export const useBookStore = defineStore('books', {
   state: () => ({
@@ -52,6 +55,14 @@ export const useBookStore = defineStore('books', {
       const bookIndex = this.books.findIndex(book => book.id === bookId);
       if (bookIndex !== -1) {
         const bookToDelete = this.books[bookIndex];
+
+        if (bookToDelete.loanedOut > 0) {
+          console.error(`Tentativa de excluir o livro "${bookToDelete.title}" que possui ${bookToDelete.loanedOut} cópia(s) emprestada(s). A exclusão foi bloqueada.`);
+
+          toast.error('Este livro não pode ser excluído pois possui cópias emprestadas.');
+          return; 
+        }
+
         this.books.splice(bookIndex, 1);
       }
     },

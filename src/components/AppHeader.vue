@@ -24,6 +24,13 @@
               <RouterLink to="/historico" class="nav-link"><i style="margin-right: 0.5rem;" class="bi bi-clock-history"></i>Histórico</RouterLink>
             </li>
           </ul>
+
+          <!-- Botão de Resetar temporário -->
+          <button @click="handleReset" class="btn btn-warning me-2">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Resetar Dados
+          </button>
+          <!-- apagar ele depois -->
+
           <button @click="handleLogout" class="btn btn-outline-danger">
             <i class="bi bi-box-arrow-right me-1"></i> Sair
           </button>
@@ -36,6 +43,28 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/auth';
+//apagar depois
+import { useBookStore } from '@/store/bookStore';
+import { useLoanStore } from '@/store/loanStore';
+import { useUserStore } from '@/store/userStore';
+
+const bookStore = useBookStore();
+const loanStore = useLoanStore();
+const userStore = useUserStore();
+
+const handleReset = () => {
+  if (confirm('Você tem certeza que deseja apagar TODOS os dados (livros, usuários e histórico)? Esta ação não pode ser desfeita.')) {
+    // Reseta cada store para o seu estado inicial
+    bookStore.$reset();
+    loanStore.$reset();
+    userStore.$reset();
+    auth.$reset(); // Também reseta a autenticação
+
+    // Redireciona para a página de login
+    router.push({ name: 'login' });
+  }
+};
+// apagar depois
 
 const auth = useAuthStore();
 const router = useRouter();

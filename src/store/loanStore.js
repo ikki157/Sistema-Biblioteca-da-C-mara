@@ -72,10 +72,26 @@ export const useLoanStore = defineStore('loan', {
       }
     },
 
-    registerReturn(loanId, bookId) {
+    async registerReturn(loanId) {
+      const { useBookStore } = await import('./bookStore');
+      const bookStore = useBookStore();
       const loanEvent = this.history.find(e => e.loanId === loanId && e.type === 'Empréstimo');
       if (loanEvent) {
-        this.history.unshift({ id: this.nextEventId++, type: 'Devolução', loanId: loanId, book: loanEvent.book, user: loanEvent.user, date: new Date().toISOString() });
+        this.history.unshift({ 
+            id: this.nextEventId++, 
+            type: 'Devolução', 
+            loanId: loanId, 
+            book: loanEvent.book, 
+            user: loanEvent.user, 
+            date: new Date().toISOString() 
+        });
+        const book = bookStore.getBookById(loanEvent.book.id);
+        if (book) {
+          bookStore.increaseAvailability(loanEvent.book,id);
+        } else {
+          console.warn(`Devolução registrada para um livro que não existe mais no acervo (ID: ${loanEvent.book.id}). O empréstimo foi finalizado no histórico.`)
+        }
+        bookStore.increaseAvailability(loanEvent.book.id);
       }
     },
 
@@ -83,9 +99,20 @@ export const useLoanStore = defineStore('loan', {
       const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
       if (loanEvent) {
         loanEvent.dueDate = newDueDate;
-        this.history.unshift({ id: this.nextEventId++, type: 'Renovação', loanId: loanId, book: loanEvent.book, user: loanEvent.user, date: new Date().toISOString(), newDueDate: newDueDate });
+        this.history.unshift({ 
+            id: this.nextEventId++, 
+            type: 'Renovação', 
+            loanId: loanId, 
+            book: loanEvent.book, 
+            user: loanEvent.user, 
+            date: new Date().toISOString(), 
+            newDueDate: newDueDate 
+        });
+        return true;
       }
+      return false;
     },
   },
+
   persist: true,
 });
