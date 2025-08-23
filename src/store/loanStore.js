@@ -4,6 +4,7 @@ export const useLoanStore = defineStore('loan', {
   state: () => ({
     history: [],
     nextLoanId: 1,
+    nextEventId: 1,
   }),
 
   getters: {
@@ -45,7 +46,7 @@ export const useLoanStore = defineStore('loan', {
       this.history.unshift({ id: this.nextEventId++, type: 'Exclusão de Usuário', book: { title: `Usuário Excluído: ${user.name}` }, user: { name: 'N/A' }, date: new Date().toISOString() });
     },
 
-
+// FUNÇÕES DE EMPRÉSTIMO
     async registerLoan(book, user, dueDate) {
       const { useBookStore } = await import('./bookStore');
       const bookStore = useBookStore();
@@ -53,6 +54,7 @@ export const useLoanStore = defineStore('loan', {
       if (book.available > 0) { 
         const loanEvent = {
           loanId: this.nextLoanId,
+          id: this.nextEventId++,
           type: 'Empréstimo',
           book: { id: book.id, title: book.title },
           user: { id: user.id, name: user.name },
@@ -60,7 +62,7 @@ export const useLoanStore = defineStore('loan', {
           dueDate: dueDate,
         };
 
-        this.history.push(loanEvent);
+        this.history.unshift(loanEvent);
         this.nextLoanId++;
         bookStore.decreaseAvailability(book.id);
 
@@ -70,19 +72,13 @@ export const useLoanStore = defineStore('loan', {
       }
     },
 
-
-    // FUNÇÕES DE EMPRÉSTIMO
-    registerLoan(book, user, dueDate) {
-      const loanEvent = { loanId: this.nextEventId, type: 'Empréstimo', book: { id: book.id, title: book.title }, user: { id: user.id, name: user.name }, date: new Date().toISOString(), dueDate: dueDate };
-      this.history.unshift(loanEvent);
-      this.nextEventId++;
-    },
     registerReturn(loanId, bookId) {
       const loanEvent = this.history.find(e => e.loanId === loanId && e.type === 'Empréstimo');
       if (loanEvent) {
         this.history.unshift({ id: this.nextEventId++, type: 'Devolução', loanId: loanId, book: loanEvent.book, user: loanEvent.user, date: new Date().toISOString() });
       }
     },
+
     extendDueDate(loanId, newDueDate) {
       const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
       if (loanEvent) {

@@ -19,7 +19,7 @@
             <tr v-if="loanStore.history.length === 0">
               <td colspan="4" class="text-center text-muted py-4">Nenhuma movimentação registrada.</td>
             </tr>
-            <tr v-for="event in loanStore.history" :key="event.id">
+            <tr v-for="event in loanStore.history" :key="nextEventId">
               <td>{{ formatDateTime(event.date) }}</td>
               <td>
                 <span class="badge" :class="getBadgeClass(event.type)">

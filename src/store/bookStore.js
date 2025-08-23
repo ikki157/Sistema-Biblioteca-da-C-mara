@@ -91,6 +91,7 @@ export const useBookStore = defineStore('books', {
     async editBook(bookId, updatedData) {
 
       const { useLoanStore } = await import('./loanStore');
+      const loanStore = useLoanStore();
       const book = this.getBookById(bookId);
       if (book) {
         const quantityDifference = updatedData.quantity - book.quantity;

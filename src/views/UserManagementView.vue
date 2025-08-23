@@ -52,7 +52,7 @@
 
                   <div
                     v-for="loan in getActiveLoansForUser(user)"
-                    :key="loan.loanId"
+                    :key="nextLoanId"
                     class="d-flex justify-content-around align-items-center bg-light p-2 rounded mb-1"
                   >
                     <span>Com: {{ loan.book.title }}</span>
