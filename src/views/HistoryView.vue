@@ -1,43 +1,54 @@
 <template>
-  <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-      <h2 class="h4 mb-0">Histórico de Movimentações</h2>
 
-      <div class="mb-3">
-          <a class="btn btn-outline-primary" data-bs-toggle="collapse" href="#collapseFilters" role="button" aria-expanded="false" aria-controls="collapseFilters">
-              <i class="bi bi-funnel me-1"></i>
-              Mostrar/Ocultar Filtros
-          </a>
-      </div>
-
-      <div class="collapse" id="collapseFilters">
-        <div class="row g-3 mb-4 p-3 bg-light border rounded">
+    <div class="collapse" id="collapseFilters">
+      <div class="card-body border-bottom">
+        <div class="row g-3 align-items-end">
           <div class="col-md-4">
             <label for="filterAction" class="form-label">Filtrar por Ação</label>
             <select id="filterAction" class="form-select" v-model="actionTypeFilter">
               <option value="">Todas as Ações</option>
-            <option v-for="type in uniqueActionTypes" :key="type" :value="type">{{ type }}</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label for="filterDate" class="form-label">Filtrar por Data</label>
-          <input type="date" id="filterDate" class="form-control" v-model="dateFilter">
-        </div>
-        <div class="col-md-4">
-          <label for="sortOrder" class="form-label">Ordenar Por</label>
-          <select id="sortOrder" class="form-select" v-model="sortOrder">
-            <option value="desc">Mais Recentes</option>
-            <option value="asc">Mais Antigos</option>
-            <option value="alpha">Alfabético (Livro)</option>
-          </select>
-        </div>
-        <div class="col-12 text-end" v-if="isAnyFilterActive">
-          <button @click="clearFilters" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-x-circle me-1"></i> Limpar Filtros
-          </button>
+              <option v-for="type in uniqueActionTypes" :key="type" :value="type">{{ type }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+              <label for="dateFilterType" class="form-label">Filtrar por Período</label>
+              <select id="dateFilterType" class="form-select" v-model="dateFilterType">
+                <option value="">Qualquer Data</option>
+                <option value="day">Data Específica</option>
+                <option value="week">Esta Semana</option>
+                <option value="month">Este Mês</option>
+                <option value="year">Este Ano</option>
+              </select>
+            </div>
+            <div v-if="dateFilterType === 'day'" class="col-md-3">
+                <label for="filterDate" class="form-label">Selecione o Dia</label>
+                <input type="date" id="filterDate" class="form-control" v-model="dateFilterValue">
+            </div>
+          <div class="col-md-3">
+            <label for="sortOrder" class="form-label">Ordenar Por</label>
+            <select id="sortOrder" class="form-select" v-model="sortOrder">
+              <option value="desc">Mais Recentes</option>
+              <option value="asc">Mais Antigos</option>
+              <option value="alpha">Alfabético (Livro)</option>
+            </select>
+          </div>
+          <div class="col-md-2 text-end">
+              <button @click="clearFilters" class="btn btn-outline-secondary w-100" v-if="isAnyFilterActive">
+                  Limpar
+              </button>
+          </div>
         </div>
       </div>
-      </div>
+    </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <h2 class="h4 mb-0">Histórico de Movimentações</h2>
+
+          <a class="btn btn-outline-primary me-2" data-bs-toggle="collapse" href="#collapseFilters" role="button" aria-expanded="false" aria-controls="collapseFilters">
+              <i class="bi bi-funnel me-1"></i>
+              Filtros
+          </a>
 
       <RouterLink to="/" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Voltar</RouterLink>
       
@@ -83,10 +94,10 @@ import { useLoanStore } from '@/store/loanStore';
 
 const loanStore = useLoanStore();
 const actionTypeFilter = ref('');
-const dateFilter = ref('');
 const sortOrder = ref('desc');
 const isFilterVisible = ref(false);
-
+const dateFilterType = ref(''); 
+const dateFilterValue = ref('');
 
 const formatDateTime = (date) => {
   if (!date) return '';
@@ -158,10 +169,12 @@ const uniqueActionTypes = computed(() => {
 
 const clearFilters = () => {
   actionTypeFilter.value = '';
-  dateFilter.value = '';
+  dateFilterType.value = '';
+  dateFilterValue.value = '';  
 };
 
-const isAnyFilterActive = computed(() => actionTypeFilter.value || dateFilter.value);
+const isAnyFilterActive = computed(() => actionTypeFilter.value || dateFilterType.value);
+
 
 const filteredHistory = computed(() => {
   let history = [...loanStore.history];
@@ -170,11 +183,40 @@ const filteredHistory = computed(() => {
     history = history.filter(event => event.type === actionTypeFilter.value);
   }
 
-  if (dateFilter.value) {
-    history = history.filter(event => {
-      const eventDate = new Date(event.date).toISOString().split('T')[0];
-      return eventDate === dateFilter.value;
-    });
+  if (dateFilterType.value) {
+      const now = new Date();
+      history = history.filter(event => {
+          const eventDate = new Date(event.date);
+
+          switch (dateFilterType.value) {
+              case 'day':
+                  if (!dateFilterValue.value) return false;
+                  const filterDate = new Date(dateFilterValue.value + 'T00:00:00');
+                  return eventDate.getFullYear() === filterDate.getFullYear() &&
+                        eventDate.getMonth() === filterDate.getMonth() &&
+                        eventDate.getDate() === filterDate.getDate();
+
+              case 'week':
+                  const startOfWeek = new Date(now);
+                  startOfWeek.setDate(now.getDate() - now.getDay()); 
+                  startOfWeek.setHours(0, 0, 0, 0);
+
+                  const endOfWeek = new Date(startOfWeek);
+                  endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+                  return eventDate >= startOfWeek && eventDate < endOfWeek;
+
+              case 'month':
+                  return eventDate.getMonth() === now.getMonth() &&
+                        eventDate.getFullYear() === now.getFullYear();
+
+              case 'year':
+                  return eventDate.getFullYear() === now.getFullYear();
+
+              default:
+                  return true;
+          }
+      });
   }
 
   history.sort((a, b) => {
