@@ -83,35 +83,44 @@ export const useLoanStore = defineStore('loan', {
             loanId: loanId, 
             book: loanEvent.book, 
             user: loanEvent.user, 
-            date: new Date().toISOString() 
+            date: new Date().toISOString(),
+            loanDate: loanEvent.date,
         });
         const book = bookStore.getBookById(loanEvent.book.id);
         if (book) {
-          bookStore.increaseAvailability(loanEvent.book,id);
+          bookStore.increaseAvailability(loanEvent.book.id);
         } else {
           console.warn(`Devolução registrada para um livro que não existe mais no acervo (ID: ${loanEvent.book.id}). O empréstimo foi finalizado no histórico.`)
         }
-        bookStore.increaseAvailability(loanEvent.book.id);
       }
     },
 
-    extendDueDate(loanId, newDueDate) {
-      const loanEvent = this.history.find(event => event.loanId === loanId && event.type === 'Empréstimo');
-      if (loanEvent) {
-        loanEvent.dueDate = newDueDate;
-        this.history.unshift({ 
-            id: this.nextEventId++, 
-            type: 'Renovação', 
-            loanId: loanId, 
-            book: loanEvent.book, 
-            user: loanEvent.user, 
-            date: new Date().toISOString(), 
-            newDueDate: newDueDate 
-        });
-        return true;
+     extendDueDate(loanId, newDueDate) {
+      
+      const originalLoan = this.history.find(e => e.loanId === loanId && e.type === 'Empréstimo');
+      if (!originalLoan) {
+        return false;
       }
-      return false;
+
+      const latestRenewal = this.history.find(e => e.loanId === loanId && e.type === 'Renovação');
+      
+      
+      const previousDueDate = latestRenewal ? latestRenewal.newDueDate : originalLoan.dueDate;
+
+      this.history.unshift({ 
+          id: this.nextEventId++, 
+          type: 'Renovação', 
+          loanId: loanId, 
+          book: originalLoan.book, 
+          user: originalLoan.user, 
+          date: new Date().toISOString(), 
+          previousDueDate: previousDueDate, 
+          newDueDate: newDueDate,
+      });
+
+      return true;
     },
+
   },
 
   persist: true,

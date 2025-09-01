@@ -28,6 +28,7 @@ export const useUserStore = defineStore('user', {
         email: userData.email,
       };
       this.users.push(newUser);
+      loanStore.logUserCreation(newUser);
       return newUser;
     },
 

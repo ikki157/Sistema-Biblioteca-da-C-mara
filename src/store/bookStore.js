@@ -47,6 +47,7 @@ export const useBookStore = defineStore('books', {
         bookImage: bookData.bookImage,
       };
       this.books.push(newBook);
+      loanStore.logBookCreation(newBook);
       return newBook;
     },
 
