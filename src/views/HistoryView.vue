@@ -2,15 +2,15 @@
 
     <div class="collapse" id="collapseFilters">
       <div class="card-body border-bottom">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-4">
+        <div class="row g-3 align-items-end mb-3">
+          <div class="col-md-auto">
             <label for="filterAction" class="form-label">Filtrar por Ação</label>
             <select id="filterAction" class="form-select" v-model="actionTypeFilter">
               <option value="">Todas as Ações</option>
               <option v-for="type in uniqueActionTypes" :key="type" :value="type">{{ type }}</option>
             </select>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-auto">
               <label for="dateFilterType" class="form-label">Filtrar por Período</label>
               <select id="dateFilterType" class="form-select" v-model="dateFilterType">
                 <option value="">Qualquer Data</option>
@@ -20,11 +20,11 @@
                 <option value="year">Este Ano</option>
               </select>
             </div>
-            <div v-if="dateFilterType === 'day'" class="col-md-3">
+            <div v-if="dateFilterType === 'day'" class="col-md-auto">
                 <label for="filterDate" class="form-label">Selecione o Dia</label>
                 <input type="date" id="filterDate" class="form-control" v-model="dateFilterValue">
             </div>
-          <div class="col-md-3">
+          <div class="col-md-auto">
             <label for="sortOrder" class="form-label">Ordenar Por</label>
             <select id="sortOrder" class="form-select" v-model="sortOrder">
               <option value="desc">Mais Recentes</option>
@@ -32,7 +32,7 @@
               <option value="alpha">Alfabético (Livro)</option>
             </select>
           </div>
-          <div class="col-md-2 text-end">
+          <div class="col-md-auto ms-auto">
               <button @click="clearFilters" class="btn btn-outline-secondary w-100" v-if="isAnyFilterActive">
                   Limpar
               </button>
