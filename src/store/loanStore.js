@@ -9,17 +9,21 @@ export const useLoanStore = defineStore('loan', {
 
   getters: {
     totalLoans: (state) => state.history.filter(e => e.type === 'Empréstimo').length,
+
     totalReturns: (state) => state.history.filter(e => e.type === 'Devolução').length,
+    
     currentlyLoanedCount: (state) => {
-      const activeLoans = new Set();
-      state.history.forEach(event => {
-        if (event.type === 'Empréstimo') {
-          activeLoans.add(event.loanId);
-        } else if (event.type === 'Devolução') {
-          activeLoans.delete(event.loanId);
-        }
-      });
-      return activeLoans.size;
+      const returnedLoanIds = new Set(
+        state.history
+          .filter(event => event.type === 'Devolução')
+          .map(event => event.loanId)
+      );
+
+      const activeLoanCount = state.history.filter(event => 
+        event.type === 'Empréstimo' && !returnedLoanIds.has(event.loanId)
+      ).length;
+
+      return activeLoanCount;
     },
   },
 
